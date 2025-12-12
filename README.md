@@ -287,7 +287,7 @@ AI_SERVICE_URL=http://localhost:3004
 - ESLint for code quality
 - Prettier for formatting (configure as needed)
 
-## 📈 Scaling Considerations
+## 📈 Scaling Considerations 
 
 - Each microservice can be scaled independently
 - Use container orchestration for production
