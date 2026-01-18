@@ -6,10 +6,10 @@ const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || 'http://localhost
 export class ProductServiceClient {
   async getProduct(productId: string): Promise<Product | null> {
     try {
-      const response = await axios.get(`${PRODUCT_SERVICE_URL}/api/products/${productId}`);
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      const response = await axios.get<Product>(`${PRODUCT_SERVICE_URL}/api/products/${productId}`);
+      return response.data as Product;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
         return null;
       }
       console.error('Error fetching product:', error);
