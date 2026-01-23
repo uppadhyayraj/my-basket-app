@@ -21,6 +21,13 @@ This folder contains assignments, reports, and documentation for my **AI Course*
 - [03- 005- task.md](03-%20005-%20task.md) - Final task list and status.
 - [03- 006-pull_request.md](03-%20006-pull_request.md) - Draft Pull Request for the changes.
 
+### Phase 4: Framework Consolidation & Stabilization
+- [04- 001- Prompt.txt](04-%20001-%20Prompt.txt) - Prompt for consolidating and finalizing the framework.
+- [04- 002- task.md](04-%20002-%20task.md) - Task list for the consolidation phase.
+- [04- 003- implementation_plan.md](04-%20003-%20implementation_plan.md) - Plan for unified testing framework and POM structure.
+- [04- 004- walkthrough.md](04-%20004-%20walkthrough.md) - Verified walkthrough of fixes and stabilization.
+- [04- 005- README.md](04-%20005-%20README.md) - Documentation for the new `my-basket-api-tests` module.
+
 ## 🛠️ Project Scope
 The work documented here covers the enhancement of the **Cart Service**, specifically focusing on:
 - **Resilience**: Implementing timeouts, error categorization, and dependency validation.
