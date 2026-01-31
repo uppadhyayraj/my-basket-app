@@ -15,10 +15,44 @@ export class OrderService {
       throw new Error('Order must contain at least one item');
     }
 
-    const totalAmount = orderData.items.reduce(
-      (total, item) => total + (item.price * item.quantity),
-      0
-    );
+    // Fetch authoritative cart for data-integrity checks
+    const cart = await this.cartClient.getCart(userId).catch(() => null);
+    const cartItems: { id?: string; price: number; quantity: number }[] = (cart && cart.items) || [];
+
+    // Validate items and compute totals in cents to avoid floating point issues
+    const orderTotalCents = orderData.items.reduce((total, item) => {
+      if (item.quantity <= 0) throw new Error('Item quantity must be > 0');
+      if (item.price < 0) throw new Error('Item price must be >= 0');
+      const priceCents = Math.round(item.price * 100);
+      return total + priceCents * item.quantity;
+    }, 0);
+
+    // If cart present, compute cart total in cents and compare
+    if (cartItems.length > 0) {
+      const cartTotalCents = cartItems.reduce((total, item) => {
+        const priceCents = Math.round((item.price || 0) * 100);
+        return total + priceCents * (item.quantity || 0);
+      }, 0);
+
+      if (cartTotalCents !== orderTotalCents) {
+        throw new Error('Data integrity check failed: order total does not match cart total');
+      }
+
+      // Item-level consistency: ensure each order item matches a cart item by id/price/quantity
+      for (const oItem of orderData.items) {
+        const matching = cartItems.find(c => String(c.id) === String(oItem.id));
+        if (!matching) {
+          throw new Error('Data integrity check failed: order item not found in cart');
+        }
+        const matchingPriceCents = Math.round((matching.price || 0) * 100);
+        const oPriceCents = Math.round((oItem.price || 0) * 100);
+        if (matchingPriceCents !== oPriceCents || (matching.quantity || 0) !== oItem.quantity) {
+          throw new Error('Data integrity check failed: order item mismatch with cart item');
+        }
+      }
+    }
+
+    const totalAmount = orderTotalCents / 100;
 
     const order: Order = {
       id: uuidv4(),
@@ -43,7 +77,11 @@ export class OrderService {
     try {
       await this.cartClient.clearCart(userId);
     } catch (error) {
-      console.warn('Failed to clear cart after order creation:', error);
+      // rollback in-memory order on cart-clear failure to preserve consistency
+      const remaining = (this.orders.get(userId) || []).filter(o => o.id !== order.id);
+      this.orders.set(userId, remaining);
+      console.warn('Failed to clear cart after order creation, rolled back order:', error);
+      throw new Error('Failed to clear cart after order creation');
     }
 
     return order;
