@@ -112,4 +112,114 @@ test.describe('Order Service API Tests', () => {
       expect(response.status()).toBe(400);
     });
   });
+
+  test.describe('Challenge 1.3.4 - Data Integrity Checks (1.3.4Challenge)', () => {
+    const challengeUser = 'challenge-1-3-4-user';
+
+    test.afterEach(async ({ cartApi }) => {
+      await cartApi.clearCart(challengeUser);
+    });
+
+    test('1.3.4Challenge - reject when order total does not match cart total', async ({ productApi, cartApi, orderApi }) => {
+      // Setup: use an existing product and add to challenge user's cart
+      const prodResp = await productApi.getAllProducts();
+      const prodBody = await prodResp.json();
+      const prod = prodBody.products[0];
+
+      await cartApi.addItem(challengeUser, prod.id, 1);
+
+      // Craft order payload with mismatched price (cart has prod.price, we send different price)
+      const badOrder = {
+        items: [{ ...prod, quantity: 1, price: (prod.price || 0) + 1.00 }],
+        shippingAddress: address,
+        billingAddress: address,
+        paymentMethod
+      };
+
+      const response = await orderApi.createOrder(challengeUser, badOrder);
+      expect(response.status()).toBeGreaterThanOrEqual(400);
+      expect(response.status()).toBeLessThan(500);
+
+      const body = await response.json().catch(() => ({}));
+      expect(body.message || body.error || '').toContain('Data integrity');
+
+      // Cart should remain unchanged
+      const cartResp = await cartApi.getCart(challengeUser);
+      await cartApi.assertStatus?.(cartResp, 200);
+      const cartBody = await cartResp.json();
+      expect(Array.isArray(cartBody.items) ? cartBody.items.length : (cartBody.items || []).length).toBeGreaterThan(0);
+    });
+
+    test('1.3.4Challenge - rounding to cents succeeds when totals match (0.3333 example)', async ({ productApi, cartApi, orderApi }) => {
+      // Create product with price 0.3333
+      const created = await productApi.createProduct({
+        name: 'frac-product-3333',
+        description: 'Fractional price test product',
+        price: 0.3333,
+        category: 'Test',
+        inStock: true,
+        image: 'http://example.com/frac.png',
+        dataAiHint: 'fraction',
+        sku: 'FP3333'
+      });
+      await productApi.assertStatus(created, 201);
+      const createdBody = await created.json();
+      const prodId = createdBody.id;
+
+      await cartApi.addItem(challengeUser, prodId, 3);
+
+      // priceCents = Math.round(0.3333 * 100) = 33, totalCents = 33 * 3 = 99 => 0.99
+      const orderPayload = {
+        items: [{ ...createdBody, quantity: 3 }],
+        shippingAddress: address,
+        billingAddress: address,
+        paymentMethod
+      };
+
+      const resp = await orderApi.createOrder(challengeUser, orderPayload);
+      await orderApi.assertStatus(resp, 201);
+      const body = await resp.json();
+      expect(body.totalAmount).toBeCloseTo(0.99, 2);
+    });
+
+    test('1.3.4Challenge - reject when order item price mismatches cart item price', async ({ productApi, cartApi, orderApi }) => {
+      const prodResp = await productApi.getAllProducts();
+      const prodBody = await prodResp.json();
+      const prod = prodBody.products[0];
+
+      await cartApi.addItem(challengeUser, prod.id, 1);
+
+      const orderPayload = {
+        items: [{ ...prod, quantity: 1, price: (prod.price || 0) - 0.01 }],
+        shippingAddress: address,
+        billingAddress: address,
+        paymentMethod
+      };
+
+      const response = await orderApi.createOrder(challengeUser, orderPayload);
+      expect(response.status()).toBeGreaterThanOrEqual(400);
+      expect(response.status()).toBeLessThan(500);
+      const body = await response.json().catch(() => ({}));
+      expect(body.message || body.error || '').toContain('Data integrity');
+    });
+
+    test('1.3.4Challenge - reject order with zero quantity', async ({ productApi, cartApi, orderApi }) => {
+      const prodResp = await productApi.getAllProducts();
+      const prodBody = await prodResp.json();
+      const prod = prodBody.products[0];
+
+      await cartApi.addItem(challengeUser, prod.id, 1);
+
+      const orderPayload = {
+        items: [{ ...prod, quantity: 0 }],
+        shippingAddress: address,
+        billingAddress: address,
+        paymentMethod
+      };
+
+      const response = await orderApi.createOrder(challengeUser, orderPayload);
+      expect(response.status()).toBeGreaterThanOrEqual(400);
+      expect(response.status()).toBeLessThan(500);
+    });
+  });
 });

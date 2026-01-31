@@ -251,6 +251,14 @@ The Cart Service includes a professional API testing framework built with Playwr
    npx playwright show-report
    ```
 
+Run challenge or specific tests
+```bash
+# Run only the Challenge 1.3.4 order-service tests (single worker)
+npx playwright test tests/order-service/order.spec.ts -g "1.3.4Challenge" --workers=1
+
+# Run a single test by title (example)
+npx playwright test -g "1.3.4Challenge - rounding to cents succeeds"
+```
 ## 🔒 Environment Variables
 
 ### Frontend (.env.local)
