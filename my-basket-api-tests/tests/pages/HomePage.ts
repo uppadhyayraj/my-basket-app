@@ -8,7 +8,8 @@ export class HomePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.productGrid = page.locator('.grid'); // Matches the grid class in ProductList.tsx
+    // Use main role instead of css class .grid
+    this.productGrid = page.getByRole('main'); 
     // The cart button is inside a Link to /cart, and has "Shopping Cart" screen reader text
     this.cartIcon = page.getByRole('button', { name: /Shopping Cart/i });
     this.headerTitle = page.getByRole('heading', { name: 'Welcome to MyBasket Lite!' });
@@ -25,10 +26,12 @@ export class HomePage {
   }
 
   async addProductToBasket(productName: string) {
-    // Locate the card containing the product name, then find the 'Add to Cart' button within it
-    // We use a broader locator to find the card based on text, then narrow down
-    const productCard = this.page.locator('.rounded-lg', { hasText: productName }); 
-    // We can also be more specific if structure allows, but hasText is robust here
+    // Locate the specific "Add to Cart" button that is associated with the product name.
+    // We find the container (card) that has both the product name and the button.
+    const productCard = this.page.locator('div')
+      .filter({ has: this.page.getByText(productName, { exact: true }) })
+      .filter({ has: this.page.getByRole('button', { name: /Add to Cart/i }) })
+      .first();
     
     const addToCartButton = productCard.getByRole('button', { name: /Add to Cart/i });
     await addToCartButton.click();
@@ -38,10 +41,9 @@ export class HomePage {
   }
 
   async addFirstProductToBasket() {
-    // Select the first product card in the grid
-    const firstProductCard = this.productGrid.locator('.rounded-lg').first();
-    const addToCartButton = firstProductCard.getByRole('button', { name: /Add to Cart/i });
-    await addToCartButton.click();
+    // Select the first "Add to Cart" button found in the main product grid
+    const addToCartButtons = this.productGrid.getByRole('button', { name: /Add to Cart/i });
+    await addToCartButtons.first().click();
   }
 
   async openCart() {
