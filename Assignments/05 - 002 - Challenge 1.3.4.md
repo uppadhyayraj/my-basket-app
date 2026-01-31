@@ -83,3 +83,36 @@ Notes / Quick verification commands
 Pass/Fail guidance
 - Pass: API returns expected HTTP status and message, order persistence matches expectations (verify via GET), cart state matches expected (cleared or unchanged), and logs show the key verification steps (cart fetch, cents math, clearCart result).
 - Fail: Any deviation from the above (unexpected HTTP status, order created when it should not be, cart incorrectly cleared when it should remain, or missing observability information).
+
+---
+
+**Pull Request & Test Run**
+
+- PR branch: `feat/tests/1.3.4-data-integrity`
+- Commit title suggestion: `tests(order-service): add Challenge 1.3.4 data-integrity Playwright tests`
+- PR title suggestion: `Add Playwright Challenge tests + enforce data-integrity in Order Service`
+
+How to run the Challenge tests locally:
+
+1. Start microservices (ensure updated `order-service` is running):
+```bash
+npm run microservices:start
+# or on Windows
+npm run microservices:start:win
+```
+2. From the test folder, install deps and Playwright:
+```bash
+cd my-basket-api-tests
+npm ci
+npx playwright install
+```
+3. Run only the Challenge 1.3.4 tests (single worker):
+```bash
+npx playwright test tests/order-service/order.spec.ts -g "1.3.4Challenge" --workers=1
+```
+4. Run a single test by title (example):
+```bash
+npx playwright test -g "1.3.4Challenge - rounding to cents succeeds"
+```
+
+Reference: the repository contains a ready-to-paste PR markdown at `PULL_REQUEST.md` in the repo root with the full PR description, reviewer checklist, and testing instructions.
