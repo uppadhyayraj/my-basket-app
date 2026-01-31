@@ -55,6 +55,8 @@ test.describe('Cart Service API Tests', () => {
     });
 
     test('should update item quantity', async ({ cartApi }) => {
+      // Ensure the item exists before updating (makes test idempotent when run in parallel)
+      await cartApi.addItem(userId, productId, 1);
       const response = await cartApi.updateItem(userId, productId, 5);
       await cartApi.assertStatus(response, 200);
       

@@ -15,9 +15,13 @@ export class OrderService {
       throw new Error('Order must contain at least one item');
     }
 
-    // Fetch authoritative cart for data-integrity checks
-    const cart = await this.cartClient.getCart(userId).catch(() => null);
-    const cartItems: { id?: string; price: number; quantity: number }[] = (cart && cart.items) || [];
+    // Fetch authoritative cart for data-integrity checks; fail if we cannot fetch it
+    let cart: any;
+    try {
+      cart = await this.cartClient.getCart(userId);
+    } catch (err) {
+      throw new Error('Failed to fetch authoritative cart for data integrity check');
+    }
 
     // Validate items and compute totals in cents to avoid floating point issues
     const orderTotalCents = orderData.items.reduce((total, item) => {
@@ -26,9 +30,15 @@ export class OrderService {
       const priceCents = Math.round(item.price * 100);
       return total + priceCents * item.quantity;
     }, 0);
+    // If we were able to fetch the cart, treat it as authoritative and validate
+    if (cart) {
+      const cartItems: { id?: string; price: number; quantity: number }[] = (cart.items) || [];
 
-    // If cart present, compute cart total in cents and compare
-    if (cartItems.length > 0) {
+      // If the authoritative cart is empty or doesn't include items, reject the order
+      if (cartItems.length === 0) {
+        throw new Error('Data integrity check failed: authoritative cart is empty or changed');
+      }
+
       const cartTotalCents = cartItems.reduce((total, item) => {
         const priceCents = Math.round((item.price || 0) * 100);
         return total + priceCents * (item.quantity || 0);
