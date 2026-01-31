@@ -14,7 +14,7 @@ A new TypeScript class `HomePage` has been created to encapsulate the behavior a
 -   **Locators**:
     -   `productGrid`: Identifies the main container for products using the `.grid` CSS class.
     -   `cartIcon`: Locates the shopping cart button in the header using accessibility roles.
-    -   `headerTitle`: distincts the page by its main heading "Welcome to MyBasket Lite!".
+    -   `headerTitle`: Checks the page main heading "Welcome to MyBasket Lite!".
 -   **Methods**:
     -   `goto()`: Navigates directly to the application root URL (`http://localhost:9002/`).
     -   `MapsTo()`: A verification method that asserts the user is on the correct page by checking the URL and visibility of key elements.

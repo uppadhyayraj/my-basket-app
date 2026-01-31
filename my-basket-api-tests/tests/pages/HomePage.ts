@@ -37,6 +37,13 @@ export class HomePage {
     // But basic action is just the click.
   }
 
+  async addFirstProductToBasket() {
+    // Select the first product card in the grid
+    const firstProductCard = this.productGrid.locator('.rounded-lg').first();
+    const addToCartButton = firstProductCard.getByRole('button', { name: /Add to Cart/i });
+    await addToCartButton.click();
+  }
+
   async openCart() {
     await this.cartIcon.click();
   }
