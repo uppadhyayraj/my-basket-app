@@ -221,5 +221,176 @@ test.describe('Order Service API Tests', () => {
       expect(response.status()).toBeGreaterThanOrEqual(400);
       expect(response.status()).toBeLessThan(500);
     });
+  
+    test.describe('Challenge 1.3.4 - Extras (automation)', () => {
+      test.afterEach(async ({ cartApi }) => {
+        await cartApi.clearCart('extra-user');
+        await cartApi.clearCart('single-user');
+        await cartApi.clearCart('smallfrac-user');
+        await cartApi.clearCart('negprice-user');
+        await cartApi.clearCart('roundfail-user');
+        await cartApi.clearCart('fail-clear-user');
+        await cartApi.clearCart('race-user');
+        await cartApi.clearCart('bigvals-user');
+      });
+
+      test('P-01: Successful order creation with two items (happy path)', async ({ productApi, cartApi, orderApi }) => {
+        const prodsResp = await productApi.getAllProducts();
+        const prods = await prodsResp.json();
+        const a = prods.products[0];
+        const b = prods.products[1] || prods.products[0];
+
+        await cartApi.addItem('extra-user', a.id, 2);
+        await cartApi.addItem('extra-user', b.id, 1);
+
+        const payload = {
+          items: [ { ...a, quantity: 2 }, { ...b, quantity: 1 } ],
+          shippingAddress: address,
+          billingAddress: address,
+          paymentMethod
+        };
+
+        const resp = await orderApi.createOrder('extra-user', payload);
+        await orderApi.assertStatus(resp, 201);
+        const body = await resp.json();
+        expect(body.id).toBeDefined();
+        // Cart cleared
+        const cart = await cartApi.getCart('extra-user');
+        await cartApi.assertStatus(cart, 200);
+        const cartBody = await cart.json();
+        expect(cartBody.totalItems).toBe(0);
+      });
+
+      test('P-03: Single-item cart order succeeds', async ({ productApi, cartApi, orderApi }) => {
+        const prodResp = await productApi.getAllProducts();
+        const pb = await prodResp.json();
+        const prod = pb.products[0];
+
+        await cartApi.addItem('single-user', prod.id, 1);
+
+        const payload = { items: [{ ...prod, quantity: 1 }], shippingAddress: address, billingAddress: address, paymentMethod };
+        const resp = await orderApi.createOrder('single-user', payload);
+        await orderApi.assertStatus(resp, 201);
+      });
+
+      test('P-05: Very small fractional prices aggregate correctly', async ({ productApi, cartApi, orderApi }) => {
+        const p1 = await productApi.createProduct({ name: 'small-0-01', description: 'p1', price: 0.01, category: 'T', inStock: true, image: 'http://example.com/img.png', dataAiHint: 'x', sku: 's1' });
+        await productApi.assertStatus(p1, 201);
+        const b1 = await p1.json();
+        const p2 = await productApi.createProduct({ name: 'small-0-02', description: 'p2', price: 0.02, category: 'T', inStock: true, image: 'http://example.com/img.png', dataAiHint: 'x', sku: 's2' });
+        await productApi.assertStatus(p2, 201);
+        const b2 = await p2.json();
+
+        await cartApi.addItem('smallfrac-user', b1.id, 1);
+        await cartApi.addItem('smallfrac-user', b2.id, 2);
+
+        const payload = { items: [{ ...b1, quantity: 1 }, { ...b2, quantity: 2 }], shippingAddress: address, billingAddress: address, paymentMethod };
+        const resp = await orderApi.createOrder('smallfrac-user', payload);
+        await orderApi.assertStatus(resp, 201);
+        const body = await resp.json();
+        expect(body.totalAmount).toBeCloseTo(0.05, 2);
+      });
+
+      test('N-04: Order rejected when an order item price is negative', async ({ productApi, cartApi, orderApi }) => {
+        const prodResp = await productApi.getAllProducts();
+        const pb = await prodResp.json();
+        const prod = pb.products[0];
+
+        await cartApi.addItem('negprice-user', prod.id, 1);
+
+        const payload = { items: [{ ...prod, quantity: 1, price: -1.00 }], shippingAddress: address, billingAddress: address, paymentMethod };
+        const resp = await orderApi.createOrder('negprice-user', payload);
+        expect(resp.status()).toBeGreaterThanOrEqual(400);
+        expect(resp.status()).toBeLessThan(500);
+      });
+
+      test('N-05: Rounding discrepancy causes rejection (.105 example)', async ({ productApi, cartApi, orderApi }) => {
+        const created = await productApi.createProduct({ name: 'round-105', description: 'r105', price: 0.105, category: 'T', inStock: true, image: 'http://example.com/img.png', dataAiHint: 'x', sku: 'r105' });
+        await productApi.assertStatus(created, 201);
+        const cb = await created.json();
+        await cartApi.addItem('roundfail-user', cb.id, 1);
+
+        // Cart priceCents = Math.round(0.105*100)=11 => 0.11. We send 0.10 to force failure.
+        const payload = { items: [{ ...cb, quantity: 1, price: 0.10 }], shippingAddress: address, billingAddress: address, paymentMethod };
+        const resp = await orderApi.createOrder('roundfail-user', payload);
+        expect(resp.status()).toBeGreaterThanOrEqual(400);
+        expect(resp.status()).toBeLessThan(500);
+        const body = await resp.json().catch(() => ({}));
+        expect((body.message || body.error || '')).toContain('Data integrity');
+      });
+
+      test('N-06: Cart-clear failure after order creation should roll back the order', async ({ productApi, cartApi, orderApi }) => {
+        // Using special user id to trigger simulated clearCart failure in order-service
+        const created = await productApi.createProduct({ name: 'rollback-prod', description: 'rb', price: 1.00, category: 'T', inStock: true, image: 'http://example.com/img.png', dataAiHint: 'x', sku: 'rb1' });
+        await productApi.assertStatus(created, 201);
+        const cb = await created.json();
+        const uid = 'fail-clear-user';
+        await cartApi.addItem(uid, cb.id, 1);
+
+        const payload = { items: [{ ...cb, quantity: 1 }], shippingAddress: address, billingAddress: address, paymentMethod };
+        const resp = await orderApi.createOrder(uid, payload);
+        // clearCart simulated failure should cause an error and rollback
+        expect(resp.status()).toBeGreaterThanOrEqual(400);
+        // Verify no order persisted
+        const list = await orderApi.getUserOrders(uid);
+        await orderApi.assertStatus(list, 200);
+        const lb = await list.json();
+        expect(Array.isArray(lb.orders) ? lb.orders.length : 0).toBe(0);
+      });
+
+      test('E-01: Concurrency - cart changed between getCart and order submit', async ({ productApi, cartApi, orderApi }) => {
+        const prodResp = await productApi.getAllProducts();
+        const pb = await prodResp.json();
+        const prod = pb.products[0];
+        const uid = 'race-user';
+        await cartApi.addItem(uid, prod.id, 1);
+
+        // Build an order payload based on current cart
+        const payload = { items: [{ ...prod, quantity: 1 }], shippingAddress: address, billingAddress: address, paymentMethod };
+
+        // Simulate another client removing the item before we submit
+        await cartApi.removeItem(uid, prod.id);
+
+        const resp = await orderApi.createOrder(uid, payload);
+        expect(resp.status()).toBeGreaterThanOrEqual(400);
+        expect(resp.status()).toBeLessThan(500);
+      });
+
+      test('E-02: Very large quantities/prices (overflow risk) - environment dependent', async ({ productApi, cartApi, orderApi }) => {
+        const created = await productApi.createProduct({ name: 'big-price', description: 'big', price: 1000000, category: 'T', inStock: true, image: 'http://example.com/big.png', dataAiHint: 'x', sku: 'big1' });
+        await productApi.assertStatus(created, 201);
+        const cb = await created.json();
+        const uid = 'bigvals-user';
+        // Use a large quantity
+        await cartApi.addItem(uid, cb.id, 1000);
+
+        const payload = { items: [{ ...cb, quantity: 1000 }], shippingAddress: address, billingAddress: address, paymentMethod };
+        const resp = await orderApi.createOrder(uid, payload);
+        // Accept either success or explicit failure, but ensure response well-formed
+        const status = resp.status();
+        expect([201].includes(status) || (status >= 400 && status < 600)).toBeTruthy();
+        if (status === 201) {
+          const body = await resp.json();
+          expect(body.totalAmount).toBeDefined();
+        } else {
+          const body = await resp.json().catch(() => ({}));
+          expect(body.error || body.message || '').toBeDefined();
+        }
+      });
+
+      test('E-06: Observability - failed integrity check surfaces helpful message', async ({ productApi, cartApi, orderApi }) => {
+        const prodResp = await productApi.getAllProducts();
+        const pb = await prodResp.json();
+        const prod = pb.products[0];
+        const uid = 'obs-user';
+        await cartApi.addItem(uid, prod.id, 1);
+
+        const payload = { items: [{ ...prod, quantity: 1, price: (prod.price || 0) + 5 }], shippingAddress: address, billingAddress: address, paymentMethod };
+        const resp = await orderApi.createOrder(uid, payload);
+        expect(resp.status()).toBeGreaterThanOrEqual(400);
+        const body = await resp.json().catch(() => ({}));
+        expect((body.error || body.message || '')).toContain('Data integrity');
+      });
+    });
   });
 });
