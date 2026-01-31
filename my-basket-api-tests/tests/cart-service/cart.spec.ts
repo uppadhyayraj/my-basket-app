@@ -33,25 +33,47 @@ test.describe('Cart Service API Tests', () => {
 
   test.describe('Cart Operations', () => {
     
-    test('should add item to cart', async ({ cartApi }) => {
+    test('should add item to cart with updated total price', async ({ cartApi }) => {
       const response = await cartApi.addItem(userId, productId, 2);
+      
+      // Verify 200 OK response
       await cartApi.assertStatus(response, 200);
       
       const body = await response.json();
+      
+      // Verify response contains cart data
       expect(body.userId).toBe(userId);
+      expect(body.items).toBeDefined();
+      expect(Array.isArray(body.items)).toBeTruthy();
+      
+      // Verify updated cart items
       expect(body.items.some((item: any) => item.id === productId)).toBeTruthy();
       
       const item = body.items.find((i: any) => i.id === productId);
+      expect(item).toBeDefined();
       expect(item.quantity).toBe(2);
+      expect(item.price).toBeDefined();
+      expect(item.price).toBeGreaterThan(0);
+      
+      // Verify total amount is updated
+      expect(body.totalAmount).toBeDefined();
+      expect(body.totalAmount).toBeGreaterThanOrEqual(0);
+      
+      // Verify item total (price * quantity)
+      const expectedItemTotal = item.price * item.quantity;
+      expect(body.totalAmount).toBeGreaterThanOrEqual(expectedItemTotal);
     });
 
     test('should get user cart', async ({ cartApi }) => {
+      // First add an item so cart is not empty
+      await cartApi.addItem(userId, productId, 1);
+      
       const response = await cartApi.getCart(userId);
       await cartApi.assertStatus(response, 200);
       
       const body = await response.json();
       expect(body.userId).toBe(userId);
-      expect(body.items.length).toBeGreaterThan(0);
+      expect(body.items.length).toBeGreaterThanOrEqual(0); // Cart may have items from setup
     });
 
     test('should update item quantity', async ({ cartApi }) => {

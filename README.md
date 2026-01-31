@@ -227,11 +227,11 @@ For Windows users, OS-specific scripts are available:
 
 ### Automated API Testing
 
-The Cart Service includes a professional API testing framework built with Playwright and TypeScript.
+The application includes a professional API testing framework built with Playwright and TypeScript covering all microservices.
 
 1. **Navigate to the test directory:**
    ```bash
-   cd cart-service-api-tests
+   cd my-basket-api-tests
    ```
 
 2. **Run the full test suite:**
@@ -243,7 +243,7 @@ The Cart Service includes a professional API testing framework built with Playwr
 3. **Run tests for specific issues:**
    ```bash
    # Test dependency validation
-   npm test -- tests/issue1-dependency-validation.spec.ts
+   npm test -- tests/cart-service/health-audit/issue1-dependency.spec.ts
    ```
 
 4. **View test reports:**
@@ -251,13 +251,41 @@ The Cart Service includes a professional API testing framework built with Playwr
    npx playwright show-report
    ```
 
-Run challenge or specific tests
-```bash
-# Run only the Challenge 1.3.4 order-service tests (single worker)
-npx playwright test tests/order-service/order.spec.ts -g "1.3.4Challenge" --workers=1
+5. **Run challenge or specific tests:**
+   ```bash
+   # Run only the Challenge 1.3.4 order-service tests
+   npx playwright test tests/order-service/order.spec.ts -g "1.3.4Challenge" --workers=1
 
-# Run a single test by title (example)
-npx playwright test -g "1.3.4Challenge - rounding to cents succeeds"
+   # Run a single test by title (example)
+   npx playwright test -g "1.3.4Challenge - rounding to cents succeeds"
+   ```
+
+#### ⚠️ Important: Rate Limiting & Test Configuration
+
+**Rate Limiting in Development:**
+- The API Gateway's rate limiter is set to **1,000,000 requests/15 minutes** for development
+- This is configured in `microservices/api-gateway/src/index.ts`
+- **Production uses strict 1,000 requests/15 minutes limit**
+- 🚨 **If rate limit is reduced in development:** Tests will fail with HTTP 429 (Too Many Requests) errors
+
+**Test Execution:**
+- Test suite runs with **sequential execution (1 worker)** to avoid state conflicts
+- This is configured in `my-basket-api-tests/playwright.config.ts`
+- 🚨 **If changed to parallel execution:** Tests may fail due to shared microservice state interference
+- Sequential execution takes ~35 seconds; parallel would be ~16-20 seconds but with intermittent failures
+
+**Why These Settings Matter:**
+- Parallel test workers against shared microservice instances cause state conflicts (carts, orders, products interfering between tests)
+- Low rate limits cause HTTP 429 rejections when multiple tests hit the gateway simultaneously
+- These are **development-only optimizations**; production deployments maintain strict security limits
+
+**For CI/CD Pipelines:**
+```bash
+# Override to parallel if services are isolated per worker
+WORKERS=6 npm test
+
+# Or keep sequential for stable results
+npm test  # Uses workers: 1 by default
 ```
 ## 🔒 Environment Variables
 
@@ -318,6 +346,45 @@ AI_SERVICE_URL=http://localhost:3004
 1. Ensure Docker is running
 2. Clean up: `docker system prune -f`
 3. Rebuild: `npm run docker:build`
+
+### API Tests Failing with HTTP 429 (Too Many Requests)
+**Problem:** Tests fail with "Too many requests from this IP" errors
+- Check rate limit in `microservices/api-gateway/src/index.ts`
+- Ensure it's set to `1000000` (1 million) for development, NOT `50000`
+
+**Solution:**
+1. Restart API Gateway to apply rate limit changes:
+   ```bash
+   cd microservices/api-gateway
+   npm run build
+   docker-compose down api-gateway
+   docker-compose up -d api-gateway
+   ```
+
+2. Verify rate limit is applied:
+   ```bash
+   npm run microservices:health
+   ```
+
+### API Tests Failing with Intermittent Failures (state conflicts)
+**Problem:** Tests pass sometimes, fail other times
+- Check test worker configuration in `my-basket-api-tests/playwright.config.ts`
+- Ensure `workers: 1` is set (sequential execution)
+
+**Solution:**
+1. Verify sequential execution:
+   ```bash
+   grep "workers:" my-basket-api-tests/playwright.config.ts
+   ```
+   Should show: `workers: 1,`
+
+2. Run test suite:
+   ```bash
+   cd my-basket-api-tests
+   npm test  # Sequential execution (stable, ~35s)
+   ```
+
+3. If you need parallel testing, ensure service isolation per worker (advanced setup)
 
 ## 🚀 Deployment
 

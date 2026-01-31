@@ -16,10 +16,10 @@ const PORT = process.env.PORT || 3000;
 
 const healthCheckService = new HealthCheckService();
 
-// Rate limiting
+// Rate limiting - relaxed for development, strict for production
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 1000 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 1000 : 1000000, // Effectively unlimited for development/testing
   message: 'Too many requests from this IP, please try again later.',
 });
 
