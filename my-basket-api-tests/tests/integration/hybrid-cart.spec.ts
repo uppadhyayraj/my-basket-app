@@ -4,8 +4,9 @@ import { CartPage } from '../pages/CartPage';
 test('Hybrid Integration: Seed data via API, verify via UI', async ({ page }) => {
   const cartPage = new CartPage(page);
   const userId = `hybrid-test-user-${Date.now()}`;
+  const gatewayURL = process.env.GATEWAY_URL || 'http://localhost:3000';
   const apiContext = await request.newContext({
-    baseURL: 'http://localhost:3000'
+    baseURL: gatewayURL
   });
   
   let product: any;
@@ -31,7 +32,11 @@ test('Hybrid Integration: Seed data via API, verify via UI', async ({ page }) =>
 
   // 2. Act: Set User ID and Navigate to Cart
   await test.step('Act: Navigate to Cart', async () => {
-    await cartPage.setUserId(userId);
+    // Navigate to home first to set localStorage, then go to cart
+    await page.goto('/');
+    await page.evaluate((id) => {
+      localStorage.setItem('demo_user_id', id);
+    }, userId);
     await cartPage.goto();
   });
 

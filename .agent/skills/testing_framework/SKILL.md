@@ -20,10 +20,16 @@ Execute standardized testing workflows for "MyBasket Lite".
 
 ### 2. Create/Update Page Object
 -   **File**: `tests/pages/[PageName].ts`
+-   **Standards**:
+    -   Extend `BasePage` for common actions (toasts, navigation, etc.).
+    -   Prioritize accessible locators (`getByRole`, `getByLabel`, `getByHeading`).
+    -   Use `data-testid` as a fallback for non-semantic elements.
 -   **Pattern**:
     ```typescript
-    export class [PageName] {
-      constructor(readonly page: Page) {}
+    import { BasePage } from './BasePage';
+    
+    export class [PageName] extends BasePage {
+      constructor(page: Page) { super(page); }
       readonly submitBtn = this.page.getByRole('button', { name: 'Submit' });
       async performAction() { await this.submitBtn.click(); }
     }
