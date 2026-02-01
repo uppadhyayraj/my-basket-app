@@ -27,7 +27,8 @@ Reference the existing `HomePage` class if applicable. If new Page Objects are n
     -   Provide realistic JSON responses (200 OK for success, 4xx/5xx for error cases).
     -   Do not allow any traffic to hit the real backend or `localhost:3000/api`.
 2.  **Page Object Usage**:
-    -   Instantiate Page Objects at the start of the test.
+    -   Instantiate Page Objects (extending `BasePage`) at the start of the test.
+    -   Use `data-testid` locators within Page Objects for custom components.
     -   Use semantic methods (e.g., `homePage.addFirstProductToBasket()`) rather than direct `page.click()`.
 3.  **Step-by-Step Reporting**:
     -   Wrap logical blocks in `test.step('Description', async () => { ... })`.

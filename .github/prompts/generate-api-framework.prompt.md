@@ -17,7 +17,7 @@ As a Senior Test Architect, create a robust, scalable API testing framework foun
 Create a complete Playwright TypeScript project structure with the following requirements:
 -   **Project Name**: [INSERT_PROJECT_NAME]
 -   **APIs to Test**: [LIST_API_ENDPOINTS]
--   **Base URL**: [INSERT_BASE_URL]
+-   **Base URL**: Use environment-based configuration (e.g., `process.env.BASE_URL`).
 -   **Auth**: [None/Bearer Token/API Key/Basic Auth]
 
 **CONSTRAINTS (Structure & Components)**

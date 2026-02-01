@@ -39,7 +39,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
   };
 
   return (
-    <Card className="flex items-center p-4 space-x-4 shadow-sm">
+    <Card data-testid="cart-item-card" className="flex items-center p-4 space-x-4 shadow-sm">
       <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
         <Image
           src={item.image}
@@ -62,6 +62,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
             ${(item.price * item.quantity).toFixed(2)}
           </p>
           <Button
+            data-testid="remove-item-button"
             variant="ghost"
             size="icon"
             onClick={handleRemoveItem}

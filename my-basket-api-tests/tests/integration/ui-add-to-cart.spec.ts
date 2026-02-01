@@ -7,7 +7,6 @@ test.describe('Home Page UI Tests', () => {
     await page.route('**/api/cart/*', async (route) => {
       const method = route.request().method();
       if (method === 'GET') {
-        // Return empty cart for initial load
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -19,7 +18,6 @@ test.describe('Home Page UI Tests', () => {
           })
         });
       } else if (method === 'DELETE') {
-         // Handle clear cart or remove item
          await route.fulfill({ status: 200, json: { id: 'mock-cart-id', items: [], totalItems: 0 } });
       } else {
         await route.continue();
@@ -28,7 +26,6 @@ test.describe('Home Page UI Tests', () => {
 
     await page.route('**/api/cart/*/items', async (route) => {
       if (route.request().method() === 'POST') {
-        // Return successful cart update
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -55,7 +52,13 @@ test.describe('Home Page UI Tests', () => {
     
     await test.step('Navigate to Home Page', async () => {
       await homePage.goto();
-      await homePage.MapsTo();
+      try {
+        await homePage.verifyPageLoaded();
+      } catch (e) {
+        console.log('PAGE CONTENT ON FAILURE:');
+        console.log(await page.content());
+        throw e;
+      }
     });
 
     await test.step('Add first product to cart', async () => {
@@ -63,12 +66,7 @@ test.describe('Home Page UI Tests', () => {
     });
 
     await test.step('Verify "Item added" toast appears', async () => {
-      // Toast structure based on Shadcn UI or typical toast libraries often found in .toaster or .toast class
-      // Based on ProductCard.tsx, it uses useToast hook.
-      // We look for a visible toast with success message or title.
-      // The ProductCard says: title: "Added to cart"
-      const toast = page.getByText('Added to cart');
-      await expect(toast).toBeVisible({ timeout: 5000 });
+      await homePage.verifyToastVisible('Added to cart');
     });
   });
 });
