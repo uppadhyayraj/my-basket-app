@@ -19,7 +19,16 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
-    "test:api": "cd microservices && npm run test",
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=ui-chromium",
+    "test:ui:firefox": "playwright test --project=ui-firefox",
+    "test:ui:all": "playwright test --project=ui-chromium --project=ui-firefox",
+    "test:debug": "playwright test --debug",
+    "test:headed": "playwright test --headed",
+    "test:ui:watch": "playwright test --project=ui-chromium --ui",
+    "test:report": "playwright show-report",
+    "test:codegen": "playwright codegen localhost:9002",
     "dev:full": "npm run microservices:start && npm run dev"
   },
   "dependencies": {
@@ -69,6 +78,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
