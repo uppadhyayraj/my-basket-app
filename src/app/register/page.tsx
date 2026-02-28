@@ -20,6 +20,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [attempted, setAttempted] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -34,6 +35,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    setAttempted(true);
 
     if (!username.trim() || !password.trim() || !name.trim() || !email.trim()) {
       setError("All fields are required.");
@@ -80,30 +82,32 @@ export default function RegisterPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Full Name <span className="text-destructive">*</span></Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="John Doe"
+                placeholder="Enter your full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
                 autoFocus
+                className={attempted && !name.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
+                className={attempted && !email.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Username <span className="text-destructive">*</span></Label>
               <Input
                 id="username"
                 type="text"
@@ -111,10 +115,11 @@ export default function RegisterPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
+                className={attempted && !username.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Password <span className="text-destructive">*</span></Label>
               <Input
                 id="password"
                 type="password"
@@ -122,10 +127,11 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
+                className={attempted && !password.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">Confirm Password <span className="text-destructive">*</span></Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -133,6 +139,7 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
+                className={attempted && !confirmPassword.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
               />
             </div>
           </CardContent>

@@ -65,7 +65,7 @@ const EMPTY_ADDRESS: Address = {
   city: "",
   state: "",
   zipCode: "",
-  country: "USA",
+  country: "",
   phone: "",
 };
 
@@ -143,6 +143,8 @@ export function OrderReviewClient() {
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [shippingAttempted, setShippingAttempted] = useState(false);
+  const [paymentAttempted, setPaymentAttempted] = useState(false);
 
   // Shipping state
   const [shippingAddress, setShippingAddress] =
@@ -187,6 +189,7 @@ export function OrderReviewClient() {
 
   // ─── Validation ─────────────────────────────────────────────
   const validateShipping = (): boolean => {
+    setShippingAttempted(true);
     const a = shippingAddress;
     if (
       !a.firstName ||
@@ -195,6 +198,7 @@ export function OrderReviewClient() {
       !a.city ||
       !a.state ||
       !a.zipCode ||
+      !a.country ||
       !a.phone
     ) {
       setFormError("Please fill in all required shipping fields.");
@@ -219,6 +223,7 @@ export function OrderReviewClient() {
   };
 
   const validatePayment = (): boolean => {
+    setPaymentAttempted(true);
     if (payment.method === "cod") {
       setFormError(null);
       return true;
@@ -402,6 +407,8 @@ export function OrderReviewClient() {
     );
   }
 
+  const errCls = "border-destructive focus-visible:ring-destructive";
+
   // ─── Address Fields Helper ─────────────────────────────────
   const renderAddressFields = (
     addr: Address,
@@ -411,31 +418,34 @@ export function OrderReviewClient() {
     <div className="grid gap-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor={`${prefix}-firstName`}>First Name *</Label>
+          <Label htmlFor={`${prefix}-firstName`}>First Name <span className="text-destructive">*</span></Label>
           <Input
             id={`${prefix}-firstName`}
-            placeholder="John"
+            placeholder="Enter first name"
             value={addr.firstName}
             onChange={(e) => onChange("firstName", e.target.value)}
+            className={shippingAttempted && !addr.firstName ? errCls : ""}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${prefix}-lastName`}>Last Name *</Label>
+          <Label htmlFor={`${prefix}-lastName`}>Last Name <span className="text-destructive">*</span></Label>
           <Input
             id={`${prefix}-lastName`}
-            placeholder="Doe"
+            placeholder="Enter last name"
             value={addr.lastName}
             onChange={(e) => onChange("lastName", e.target.value)}
+            className={shippingAttempted && !addr.lastName ? errCls : ""}
           />
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor={`${prefix}-street`}>Street Address *</Label>
+        <Label htmlFor={`${prefix}-street`}>Street Address <span className="text-destructive">*</span></Label>
         <Input
           id={`${prefix}-street`}
-          placeholder="123 Main Street"
+          placeholder="Enter street address"
           value={addr.street}
           onChange={(e) => onChange("street", e.target.value)}
+          className={shippingAttempted && !addr.street ? errCls : ""}
         />
       </div>
       <div className="space-y-2">
@@ -444,58 +454,64 @@ export function OrderReviewClient() {
         </Label>
         <Input
           id={`${prefix}-apartment`}
-          placeholder="Apt 4B"
+          placeholder="Apt, suite, unit (optional)"
           value={addr.apartment}
           onChange={(e) => onChange("apartment", e.target.value)}
         />
       </div>
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor={`${prefix}-city`}>City *</Label>
+          <Label htmlFor={`${prefix}-city`}>City <span className="text-destructive">*</span></Label>
           <Input
             id={`${prefix}-city`}
-            placeholder="New York"
+            placeholder="Enter city"
             value={addr.city}
             onChange={(e) => onChange("city", e.target.value)}
+            className={shippingAttempted && !addr.city ? errCls : ""}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${prefix}-state`}>State *</Label>
+          <Label htmlFor={`${prefix}-state`}>State <span className="text-destructive">*</span></Label>
           <Input
             id={`${prefix}-state`}
-            placeholder="NY"
+            placeholder="Enter state"
             value={addr.state}
             onChange={(e) => onChange("state", e.target.value)}
+            className={shippingAttempted && !addr.state ? errCls : ""}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${prefix}-zipCode`}>Zip Code *</Label>
+          <Label htmlFor={`${prefix}-zipCode`}>Zip Code <span className="text-destructive">*</span></Label>
           <Input
             id={`${prefix}-zipCode`}
-            placeholder="10001"
+            placeholder="Zip code"
             value={addr.zipCode}
             onChange={(e) => onChange("zipCode", e.target.value)}
+            className={shippingAttempted && !addr.zipCode ? errCls : ""}
           />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor={`${prefix}-country`}>Country</Label>
+          <Label htmlFor={`${prefix}-country`}>Country <span className="text-destructive">*</span></Label>
           <Input
             id={`${prefix}-country`}
+            placeholder="Enter country"
             value={addr.country}
             onChange={(e) => onChange("country", e.target.value)}
+            className={shippingAttempted && !addr.country ? errCls : ""}
           />
         </div>
         {prefix === "ship" && (
           <div className="space-y-2">
-            <Label htmlFor={`${prefix}-phone`}>Phone *</Label>
+            <Label htmlFor={`${prefix}-phone`}>Phone <span className="text-destructive">*</span></Label>
             <Input
               id={`${prefix}-phone`}
               type="tel"
-              placeholder="(555) 123-4567"
+              placeholder="Enter phone number"
               value={addr.phone}
               onChange={(e) => onChange("phone", e.target.value)}
+              className={shippingAttempted && !addr.phone ? errCls : ""}
             />
           </div>
         )}
@@ -692,10 +708,10 @@ export function OrderReviewClient() {
                 {payment.method !== "cod" && (
                   <div className="grid gap-4 pt-2">
                     <div className="space-y-2">
-                      <Label htmlFor="cardNumber">Card Number *</Label>
+                      <Label htmlFor="cardNumber">Card Number <span className="text-destructive">*</span></Label>
                       <Input
                         id="cardNumber"
-                        placeholder="1234 5678 9012 3456"
+                        placeholder="Card number"
                         value={payment.cardNumber}
                         onChange={(e) =>
                           setPayment((p) => ({
@@ -704,13 +720,14 @@ export function OrderReviewClient() {
                           }))
                         }
                         maxLength={19}
+                        className={paymentAttempted && payment.cardNumber.replace(/\s/g, "").length < 13 ? errCls : ""}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="cardName">Name on Card *</Label>
+                      <Label htmlFor="cardName">Name on Card <span className="text-destructive">*</span></Label>
                       <Input
                         id="cardName"
-                        placeholder="John Doe"
+                        placeholder="Name as on card"
                         value={payment.cardName}
                         onChange={(e) =>
                           setPayment((p) => ({
@@ -718,14 +735,15 @@ export function OrderReviewClient() {
                             cardName: e.target.value,
                           }))
                         }
+                        className={paymentAttempted && !payment.cardName.trim() ? errCls : ""}
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="expiry">Expiry Date *</Label>
+                        <Label htmlFor="expiry">Expiry Date <span className="text-destructive">*</span></Label>
                         <Input
                           id="expiry"
-                          placeholder="MM/YY"
+                          placeholder="MM / YY"
                           value={payment.expiry}
                           onChange={(e) =>
                             setPayment((p) => ({
@@ -734,14 +752,15 @@ export function OrderReviewClient() {
                             }))
                           }
                           maxLength={5}
+                          className={paymentAttempted && payment.expiry.length < 5 ? errCls : ""}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="cvv">CVV *</Label>
+                        <Label htmlFor="cvv">CVV <span className="text-destructive">*</span></Label>
                         <Input
                           id="cvv"
                           type="password"
-                          placeholder="123"
+                          placeholder="CVV"
                           value={payment.cvv}
                           onChange={(e) =>
                             setPayment((p) => ({
@@ -752,6 +771,7 @@ export function OrderReviewClient() {
                             }))
                           }
                           maxLength={4}
+                          className={paymentAttempted && payment.cvv.length < 3 ? errCls : ""}
                         />
                       </div>
                     </div>
