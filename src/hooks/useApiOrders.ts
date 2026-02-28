@@ -3,18 +3,24 @@
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api/client";
 import { getUserId } from "@/lib/session";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Order } from "@/lib/types";
 
 export const useApiOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isLoggedIn, user } = useAuth();
 
   const fetchOrders = async () => {
+    const userId = getUserId();
+    if (!userId) {
+      setOrders([]);
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
-      const userId = getUserId();
       const ordersData = await apiClient.getOrders(userId) as { orders: Order[] };
       setOrders(ordersData.orders || []);
     } catch (err) {
@@ -25,10 +31,14 @@ export const useApiOrders = () => {
     }
   };
 
-  // Auto-fetch orders on hook initialization
+  // Re-fetch when user changes
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (isLoggedIn && user) {
+      fetchOrders();
+    } else {
+      setOrders([]);
+    }
+  }, [isLoggedIn, user?.id]);
 
   return {
     orders,

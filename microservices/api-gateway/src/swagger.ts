@@ -35,6 +35,10 @@ const options: swaggerJsdoc.Options = {
         url: 'http://localhost:3004',
         description: 'AI Service (Direct)',
       },
+      {
+        url: 'http://localhost:3005',
+        description: 'User Service (Direct)',
+      },
     ],
     tags: [
       {
@@ -42,23 +46,39 @@ const options: swaggerJsdoc.Options = {
         description: 'API Gateway endpoints',
       },
       {
+        name: 'Auth',
+        description: 'Authentication (Register/Login) via User Service (Port 3005)',
+      },
+      {
+        name: 'Users',
+        description: 'User profile management (Port 3005)',
+      },
+      {
         name: 'Products',
         description: 'Product management (Port 3001)',
       },
       {
         name: 'Cart',
-        description: 'Shopping cart management (Port 3002)',
+        description: 'Shopping cart management (Port 3002) — Requires Auth',
       },
       {
         name: 'Orders',
-        description: 'Order management (Port 3003)',
+        description: 'Order management (Port 3003) — Requires Auth',
       },
       {
         name: 'Recommendations',
-        description: 'AI recommendations (Port 3004)',
+        description: 'AI recommendations (Port 3004) — Requires Auth',
       },
     ],
     components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'JWT token from /api/users/login or /api/users/register',
+        },
+      },
       schemas: {
         HealthStatus: {
           type: 'object',
@@ -90,6 +110,13 @@ const options: swaggerJsdoc.Options = {
                   },
                 },
                 'ai-service': { 
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string' },
+                    responseTime: { type: 'number' },
+                  },
+                },
+                'user-service': { 
                   type: 'object',
                   properties: {
                     status: { type: 'string' },
@@ -141,16 +168,28 @@ Access detailed API documentation for each service:
 - **Cart Service**: [http://localhost:3002/api-docs](http://localhost:3002/api-docs)
 - **Order Service**: [http://localhost:3003/api-docs](http://localhost:3003/api-docs)
 - **AI Service**: [http://localhost:3004/api-docs](http://localhost:3004/api-docs)
+- **User Service**: [http://localhost:3005/api-docs](http://localhost:3005/api-docs)
+
+## Authentication
+
+Most endpoints require a JWT token. Obtain one via:
+- \`POST /api/users/register\` — Register a new account
+- \`POST /api/users/login\` — Login with username/password
+
+Include the token in the \`Authorization: Bearer <token>\` header.
+
+**Public endpoints** (no auth needed): \`/api/products\`, \`/api/users/register\`, \`/api/users/login\`
 
 ## Architecture
 
 All requests to microservices can be routed through the API Gateway at port 3000, or you can access services directly at their respective ports.
 
 ### Service Routes
+- Users: \`/api/users/*\` → User Service (3005)
 - Products: \`/api/products/*\` → Product Service (3001)
-- Cart: \`/api/cart/*\` → Cart Service (3002)
-- Orders: \`/api/orders/*\` → Order Service (3003)
-- Recommendations: \`/api/recommendations/*\` → AI Service (3004)
+- Cart: \`/api/cart/*\` → Cart Service (3002) — Auth Required
+- Orders: \`/api/orders/*\` → Order Service (3003) — Auth Required
+- Recommendations: \`/api/recommendations/*\` → AI Service (3004) — Auth Required
 `;
 
 export const setupSwagger = (app: Express) => {

@@ -5,7 +5,7 @@
 echo "🛑 Stopping all microservices..."
 
 # Kill processes on specific ports
-ports=(3000 3001 3002 3003 3004 9002)
+ports=(3000 3001 3002 3003 3004 3005 9002)
 
 for port in "${ports[@]}"; do
     echo "   🔄 Stopping service on port $port..."

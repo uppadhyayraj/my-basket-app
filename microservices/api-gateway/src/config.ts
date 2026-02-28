@@ -25,6 +25,12 @@ export const serviceConfig: ServiceConfig[] = [
     path: '/api/recommendations',
     healthCheck: '/api/health',
   },
+  {
+    name: 'user-service',
+    url: process.env.USER_SERVICE_URL || 'http://localhost:3005',
+    path: '/api/users',
+    healthCheck: '/api/health',
+  },
 ];
 
 export const getServiceByPath = (path: string): ServiceConfig | undefined => {

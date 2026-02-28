@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import { serviceConfig } from './config';
 import { HealthCheckService } from './health';
 import { setupSwagger } from './swagger';
+import { authMiddleware } from './middleware';
 
 dotenv.config();
 
@@ -102,6 +103,9 @@ app.get('/info', (req: express.Request, res: express.Response) => {
 });
 
 // Proxy setup for each service
+// Apply auth middleware before proxying (skips public paths automatically)
+app.use(authMiddleware);
+
 serviceConfig.forEach(service => {
   console.log(`Setting up proxy for ${service.name}: ${service.path} -> ${service.url}`);
   

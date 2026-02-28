@@ -1,0 +1,64 @@
+{
+  "orders": {
+    "7d21629f-0826-4356-9c6b-207064b91478": [
+      {
+        "id": "435935a5-64fb-4b48-a2b1-a77082fa605b",
+        "userId": "7d21629f-0826-4356-9c6b-207064b91478",
+        "items": [
+          {
+            "id": "2",
+            "name": "Whole Wheat Bread",
+            "price": 4.49,
+            "description": "Freshly baked whole wheat bread, rich in fiber.",
+            "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=400&fit=crop&auto=format",
+            "dataAiHint": "bread bakery",
+            "quantity": 1
+          },
+          {
+            "id": "3",
+            "name": "Free-Range Eggs",
+            "price": 5.99,
+            "description": "A dozen large free-range eggs, great for breakfast.",
+            "image": "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=600&h=400&fit=crop&auto=format",
+            "dataAiHint": "eggs dairy",
+            "quantity": 1
+          },
+          {
+            "id": "4",
+            "name": "Organic Spinach",
+            "price": 2.99,
+            "description": "A bag of fresh organic spinach, packed with nutrients.",
+            "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600&h=400&fit=crop&auto=format",
+            "dataAiHint": "spinach vegetables",
+            "quantity": 1
+          }
+        ],
+        "totalAmount": 13.47,
+        "status": "pending",
+        "shippingAddress": {
+          "street": "123 Demo Street",
+          "city": "Demo City",
+          "state": "CA",
+          "zipCode": "12345",
+          "country": "USA"
+        },
+        "billingAddress": {
+          "street": "123 Demo Street",
+          "city": "Demo City",
+          "state": "CA",
+          "zipCode": "12345",
+          "country": "USA"
+        },
+        "paymentMethod": {
+          "type": "credit_card",
+          "last4": "1234",
+          "brand": "Demo Card"
+        },
+        "orderDate": "2026-02-28T11:28:27.274Z",
+        "estimatedDelivery": "2026-03-05T11:28:27.274Z",
+        "createdAt": "2026-02-28T11:28:27.275Z",
+        "updatedAt": "2026-02-28T11:28:27.275Z"
+      }
+    ]
+  }
+}

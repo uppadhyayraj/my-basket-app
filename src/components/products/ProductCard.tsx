@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/ApiCartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 
 interface ProductCardProps {
@@ -16,9 +18,15 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { addToCart } = useCart();
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAddToCart = async () => {
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
     try {
       setIsLoading(true);
       await addToCart(product.id, 1);

@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from "react";
 import { apiClient } from "@/lib/api/client";
-import { getUserId } from "@/lib/session";
+import { getUserId, isLoggedIn as checkLoggedIn } from "@/lib/session";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ApiCartItem {
   id: string;
@@ -80,12 +81,17 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const { isLoggedIn: authLoggedIn, user } = useAuth();
 
   const fetchCart = async () => {
+    const userId = getUserId();
+    if (!userId) {
+      dispatch({ type: 'RESET_CART' });
+      return;
+    }
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'SET_ERROR', payload: null });
-      const userId = getUserId();
       const cartData = await apiClient.getCart(userId) as Cart;
       dispatch({ type: 'SET_CART', payload: cartData });
     } catch (err) {
@@ -167,10 +173,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Auto-fetch cart on provider mount
+  // Re-fetch cart when user logs in, reset when logs out
   useEffect(() => {
-    fetchCart();
-  }, []);
+    if (authLoggedIn && user) {
+      fetchCart();
+    } else {
+      dispatch({ type: 'RESET_CART' });
+    }
+  }, [authLoggedIn, user?.id]);
 
   const contextValue: CartContextType = {
     cart: state.cart,

@@ -1,9 +1,35 @@
 import { Cart, CartItem, Product, CartSummary } from './types';
 import { ProductServiceClient } from './product-client';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import fs from 'fs';
+
+interface CartsDb {
+  carts: Record<string, Cart>;
+}
+
+// Simple JSON file database
+const dataDir = path.join(__dirname, '..', 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const dbPath = path.join(dataDir, 'carts.json');
+
+function readDb(): CartsDb {
+  try {
+    if (fs.existsSync(dbPath)) {
+      return JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
+    }
+  } catch { /* ignore parse errors */ }
+  return { carts: {} };
+}
+
+function writeDb(data: CartsDb): void {
+  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
+}
 
 export class CartService {
-  private carts: Map<string, Cart> = new Map();
   private productClient: ProductServiceClient;
 
   constructor() {
@@ -11,7 +37,8 @@ export class CartService {
   }
 
   async getOrCreateCart(userId: string): Promise<Cart> {
-    let cart = this.carts.get(userId);
+    const db = readDb();
+    let cart = db.carts[userId];
     
     if (!cart) {
       cart = {
@@ -23,7 +50,8 @@ export class CartService {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      this.carts.set(userId, cart);
+      db.carts[userId] = cart;
+      writeDb(db);
     }
     
     return cart;
@@ -51,7 +79,9 @@ export class CartService {
 
     this.updateCartTotals(cart);
     cart.updatedAt = new Date();
-    this.carts.set(userId, cart);
+    const db = readDb();
+    db.carts[userId] = cart;
+    writeDb(db);
 
     return cart;
   }
@@ -62,7 +92,9 @@ export class CartService {
     
     this.updateCartTotals(cart);
     cart.updatedAt = new Date();
-    this.carts.set(userId, cart);
+    const db = readDb();
+    db.carts[userId] = cart;
+    writeDb(db);
 
     return cart;
   }
@@ -82,7 +114,9 @@ export class CartService {
     cart.items[itemIndex].quantity = quantity;
     this.updateCartTotals(cart);
     cart.updatedAt = new Date();
-    this.carts.set(userId, cart);
+    const db = readDb();
+    db.carts[userId] = cart;
+    writeDb(db);
 
     return cart;
   }
@@ -93,7 +127,9 @@ export class CartService {
     cart.totalAmount = 0;
     cart.totalItems = 0;
     cart.updatedAt = new Date();
-    this.carts.set(userId, cart);
+    const db = readDb();
+    db.carts[userId] = cart;
+    writeDb(db);
 
     return cart;
   }
@@ -114,6 +150,6 @@ export class CartService {
   private updateCartTotals(cart: Cart): void {
     cart.totalItems = cart.items.reduce((total, item) => total + item.quantity, 0);
     cart.totalAmount = cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
-    cart.totalAmount = Math.round(cart.totalAmount * 100) / 100; // Round to 2 decimal places
+    cart.totalAmount = Math.round(cart.totalAmount * 100) / 100;
   }
 }

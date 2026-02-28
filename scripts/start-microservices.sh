@@ -6,7 +6,7 @@ echo "🚀 Starting microservices in development mode..."
 
 # Kill any existing processes on the ports
 echo "🔄 Killing existing processes..."
-lsof -ti:3000,3001,3002,3003,3004 | xargs kill -9 2>/dev/null || true
+lsof -ti:3000,3001,3002,3003,3004,3005 | xargs kill -9 2>/dev/null || true
 
 # Function to start a service in background
 start_service() {
@@ -26,6 +26,7 @@ start_service "microservices/product-service" "Product Service" 3001
 start_service "microservices/cart-service" "Cart Service" 3002
 start_service "microservices/order-service" "Order Service" 3003
 start_service "microservices/ai-service" "AI Service" 3004
+start_service "microservices/user-service" "User Service" 3005
 start_service "microservices/api-gateway" "API Gateway" 3000
 
 echo "⏳ Waiting for services to start up..."
@@ -39,6 +40,7 @@ echo "   📦 Product Service: http://localhost:3001"
 echo "   🛒 Cart Service:    http://localhost:3002"
 echo "   📋 Order Service:   http://localhost:3003"
 echo "   🤖 AI Service:      http://localhost:3004"
+echo "   👤 User Service:    http://localhost:3005"
 echo ""
 echo "🔍 Health checks:"
 echo "   curl http://localhost:3000/health"

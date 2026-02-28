@@ -2,9 +2,14 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export class ApiClient {
   private baseUrl: string;
+  private authToken: string | null = null;
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl;
+  }
+
+  setAuthToken(token: string | null) {
+    this.authToken = token;
   }
 
   private async request<T>(
@@ -12,22 +17,30 @@ export class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options.headers as Record<string, string>),
+    };
+
+    if (this.authToken) {
+      headers['Authorization'] = `Bearer ${this.authToken}`;
+    }
+
     const config: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
       ...options,
+      headers,
     };
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const body = await response.json().catch(() => ({}));
+        const message = body.error || body.message || `HTTP error! status: ${response.status}`;
+        throw new Error(message);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error(`API request failed: ${endpoint}`, error);
@@ -133,6 +146,23 @@ export class ApiClient {
     };
     
     return this.post(`/api/orders/${userId}`, orderData);
+  }
+
+  // Auth / User methods
+  async login(username: string, password: string) {
+    return this.post('/api/users/login', { username, password });
+  }
+
+  async register(username: string, password: string, name: string, email: string) {
+    return this.post('/api/users/register', { username, password, name, email });
+  }
+
+  async updateUser(userId: string, data: { name?: string; email?: string; password?: string }) {
+    return this.put(`/api/users/${userId}`, data);
+  }
+
+  async deleteUser(userId: string) {
+    return this.delete(`/api/users/${userId}`);
   }
 
   // AI methods

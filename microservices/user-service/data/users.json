@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "id": "7d21629f-0826-4356-9c6b-207064b91478",
+      "username": "rajUppadhyay",
+      "password": "$2a$10$l5BhXS3mKumJh017aG49ouoJMOaBOvYU1nwan8VD5SahSDcfi6qhK",
+      "name": "Raj Uppadhyay",
+      "email": "raj.uppadhyay@dq.com",
+      "createdAt": "2026-02-28T11:28:05.024Z",
+      "updatedAt": "2026-02-28T11:28:05.024Z"
+    }
+  ]
+}

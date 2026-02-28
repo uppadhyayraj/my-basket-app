@@ -1,9 +1,35 @@
 import { Order, OrderStatus, CreateOrderRequest, UpdateOrderStatusRequest, OrderFilters, PaginationParams, OrderResponse } from './types';
 import { CartServiceClient } from './cart-client';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import fs from 'fs';
+
+interface OrdersDb {
+  orders: Record<string, Order[]>; // userId -> orders
+}
+
+// Simple JSON file database
+const dataDir = path.join(__dirname, '..', 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const dbPath = path.join(dataDir, 'orders.json');
+
+function readDb(): OrdersDb {
+  try {
+    if (fs.existsSync(dbPath)) {
+      return JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
+    }
+  } catch { /* ignore parse errors */ }
+  return { orders: {} };
+}
+
+function writeDb(data: OrdersDb): void {
+  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
+}
 
 export class OrderService {
-  private orders: Map<string, Order[]> = new Map(); // userId -> orders
   private cartClient: CartServiceClient;
 
   constructor() {
@@ -35,9 +61,11 @@ export class OrderService {
       updatedAt: new Date(),
     };
 
-    const userOrders = this.orders.get(userId) || [];
-    userOrders.unshift(order); // Add to beginning for newest first
-    this.orders.set(userId, userOrders);
+    const db = readDb();
+    const userOrders = db.orders[userId] || [];
+    userOrders.unshift(order);
+    db.orders[userId] = userOrders;
+    writeDb(db);
 
     // Clear the user's cart after successful order creation
     try {
@@ -50,7 +78,8 @@ export class OrderService {
   }
 
   async getOrderById(userId: string, orderId: string): Promise<Order | null> {
-    const userOrders = this.orders.get(userId) || [];
+    const db = readDb();
+    const userOrders = db.orders[userId] || [];
     return userOrders.find(order => order.id === orderId) || null;
   }
 
@@ -59,7 +88,8 @@ export class OrderService {
     filters?: OrderFilters,
     pagination?: PaginationParams
   ): Promise<OrderResponse> {
-    let userOrders = this.orders.get(userId) || [];
+    const db = readDb();
+    let userOrders = db.orders[userId] || [];
 
     // Apply filters
     if (filters) {
@@ -69,12 +99,12 @@ export class OrderService {
       
       if (filters.startDate) {
         const startDate = new Date(filters.startDate);
-        userOrders = userOrders.filter(order => order.orderDate >= startDate);
+        userOrders = userOrders.filter(order => new Date(order.orderDate) >= startDate);
       }
       
       if (filters.endDate) {
         const endDate = new Date(filters.endDate);
-        userOrders = userOrders.filter(order => order.orderDate <= endDate);
+        userOrders = userOrders.filter(order => new Date(order.orderDate) <= endDate);
       }
     }
 
@@ -101,7 +131,8 @@ export class OrderService {
     orderId: string,
     updateData: UpdateOrderStatusRequest
   ): Promise<Order | null> {
-    const userOrders = this.orders.get(userId) || [];
+    const db = readDb();
+    const userOrders = db.orders[userId] || [];
     const orderIndex = userOrders.findIndex(order => order.id === orderId);
 
     if (orderIndex === -1) {
@@ -130,12 +161,14 @@ export class OrderService {
       order.actualDelivery = new Date(updateData.actualDelivery);
     }
 
-    this.orders.set(userId, userOrders);
+    db.orders[userId] = userOrders;
+    writeDb(db);
     return order;
   }
 
   async cancelOrder(userId: string, orderId: string): Promise<Order | null> {
-    const userOrders = this.orders.get(userId) || [];
+    const db = readDb();
+    const userOrders = db.orders[userId] || [];
     const orderIndex = userOrders.findIndex(order => order.id === orderId);
 
     if (orderIndex === -1) {
@@ -155,13 +188,14 @@ export class OrderService {
     order.status = OrderStatus.CANCELLED;
     order.updatedAt = new Date();
 
-    this.orders.set(userId, userOrders);
+    db.orders[userId] = userOrders;
+    writeDb(db);
     return order;
   }
 
   private calculateEstimatedDelivery(): Date {
     const deliveryDate = new Date();
-    deliveryDate.setDate(deliveryDate.getDate() + 5); // 5 days from now
+    deliveryDate.setDate(deliveryDate.getDate() + 5);
     return deliveryDate;
   }
 
