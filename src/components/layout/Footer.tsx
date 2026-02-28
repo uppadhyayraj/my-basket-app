@@ -5,12 +5,12 @@ export function Footer() {
         <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
           Built by{" "}
           <a
-            href="https://firebase.google.com/docs/studio"
+            href="https://democratizequality.substack.com/"
             target="_blank"
             rel="noreferrer"
             className="font-medium underline underline-offset-4"
           >
-            Firebase Studio
+            Democratize Quality
           </a>
           . The source code is available on GitHub (placeholder).
         </p>
