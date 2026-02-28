@@ -6,7 +6,7 @@ export const sampleProducts: Product[] = [
     name: 'Organic Apples',
     price: 3.99,
     description: 'Crisp and juicy organic apples, perfect for snacking or baking.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'apples fruit',
   },
   {
@@ -14,7 +14,7 @@ export const sampleProducts: Product[] = [
     name: 'Whole Wheat Bread',
     price: 4.49,
     description: 'Freshly baked whole wheat bread, rich in fiber.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'bread bakery',
   },
   {
@@ -22,7 +22,7 @@ export const sampleProducts: Product[] = [
     name: 'Free-Range Eggs',
     price: 5.99,
     description: 'A dozen large free-range eggs, great for breakfast.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'eggs dairy',
   },
   {
@@ -30,7 +30,7 @@ export const sampleProducts: Product[] = [
     name: 'Organic Spinach',
     price: 2.99,
     description: 'A bag of fresh organic spinach, packed with nutrients.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'spinach vegetables',
   },
   {
@@ -38,7 +38,7 @@ export const sampleProducts: Product[] = [
     name: 'Almond Milk',
     price: 3.79,
     description: 'Unsweetened almond milk, a great dairy-free alternative.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'almond milk',
   },
   {
@@ -46,7 +46,7 @@ export const sampleProducts: Product[] = [
     name: 'Chicken Breast',
     price: 9.99,
     description: 'Boneless, skinless chicken breast, lean and versatile.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1604503468506-a8da13d11d36?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'chicken meat',
   },
   {
@@ -54,7 +54,7 @@ export const sampleProducts: Product[] = [
     name: 'Brown Rice',
     price: 2.49,
     description: 'A bag of nutritious brown rice, perfect for side dishes.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'rice grains',
   },
   {
@@ -62,7 +62,7 @@ export const sampleProducts: Product[] = [
     name: 'Greek Yogurt',
     price: 4.29,
     description: 'Plain Greek yogurt, high in protein.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'yogurt dairy',
   },
   {
@@ -70,7 +70,7 @@ export const sampleProducts: Product[] = [
     name: 'Avocado',
     price: 1.99,
     description: 'Creamy and delicious Haas avocado.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'avocado fruit',
   },
   {
@@ -78,7 +78,7 @@ export const sampleProducts: Product[] = [
     name: 'Dark Chocolate Bar',
     price: 3.49,
     description: '70% cacao dark chocolate bar, rich and indulgent.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'chocolate snack',
   },
   {
@@ -86,7 +86,7 @@ export const sampleProducts: Product[] = [
     name: 'Organic Tomatoes',
     price: 3.29,
     description: 'Vine-ripened organic tomatoes, full of flavor.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1546470427-0d538dc6e4b5?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'tomatoes vegetables',
   },
   {
@@ -94,7 +94,7 @@ export const sampleProducts: Product[] = [
     name: 'Quinoa',
     price: 6.49,
     description: 'Organic quinoa, a complete protein grain.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'quinoa grains',
   },
   {
@@ -102,7 +102,7 @@ export const sampleProducts: Product[] = [
     name: 'Salmon Fillet',
     price: 12.99,
     description: 'Fresh Atlantic salmon fillet, rich in omega-3s.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'salmon seafood',
   },
   {
@@ -110,15 +110,15 @@ export const sampleProducts: Product[] = [
     name: 'Blueberries',
     price: 4.99,
     description: 'Fresh organic blueberries, packed with antioxidants.',
-    image: 'https://placehold.co/300x200.png',
+    image: 'https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'blueberries fruit',
   },
   {
     id: '15',
-    name: 'Green Tea Bags',
+    name: 'Green Tea',
     price: 3.99,
-    description: 'A box of 20 organic green tea bags.',
-    image: 'https://placehold.co/300x200.png',
+    description: 'A box of 20 organic green tea bags, soothing and refreshing.',
+    image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'tea beverage',
   },
 ];
