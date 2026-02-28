@@ -32,9 +32,10 @@ import {
   Truck,
   ShieldCheck,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api/client";
 import { getUserId } from "@/lib/session";
+import { useAuth } from "@/contexts/AuthContext";
 
 // ─── Types ───────────────────────────────────────────────────
 interface Address {
@@ -138,6 +139,7 @@ export function OrderReviewClient() {
   } = useCart();
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useAuth();
 
   const [step, setStep] = useState(1);
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
@@ -149,6 +151,20 @@ export function OrderReviewClient() {
   // Shipping state
   const [shippingAddress, setShippingAddress] =
     useState<Address>(EMPTY_ADDRESS);
+
+  // Pre-populate from user profile
+  useEffect(() => {
+    if (user) {
+      const nameParts = (user.name || "").trim().split(/\s+/);
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+      setShippingAddress((prev) => ({
+        ...prev,
+        firstName: prev.firstName || firstName,
+        lastName: prev.lastName || lastName,
+      }));
+    }
+  }, [user]);
   const [billingAddress, setBillingAddress] = useState<Address>(EMPTY_ADDRESS);
   const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
   const [shippingMethod, setShippingMethod] = useState<"standard" | "express">(

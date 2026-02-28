@@ -173,14 +173,39 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
               <span className="text-primary">${order.totalAmount.toFixed(2)}</span>
             </div>
           </div>
+
+          <Separator />
+
+          {/* Shipping & Payment Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <h3 className="font-semibold text-sm mb-2 text-foreground">Shipping Address</h3>
+              <div className="text-sm text-muted-foreground space-y-0.5">
+                <p>{order.shippingAddress.street}</p>
+                <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
+                <p>{order.shippingAddress.country}</p>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm mb-2 text-foreground">Billing Address</h3>
+              <div className="text-sm text-muted-foreground space-y-0.5">
+                <p>{order.billingAddress.street}</p>
+                <p>{order.billingAddress.city}, {order.billingAddress.state} {order.billingAddress.zipCode}</p>
+                <p>{order.billingAddress.country}</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-sm mb-2 text-foreground">Payment Method</h3>
+            <div className="text-sm text-muted-foreground">
+              <p className="capitalize">{order.paymentMethod.brand || order.paymentMethod.type.replace(/_/g, ' ')}{order.paymentMethod.last4 ? ` ending in ${order.paymentMethod.last4}` : ''}</p>
+            </div>
+          </div>
         </CardContent>
 
         <CardFooter className="bg-muted/30 rounded-b-lg p-4">
-          <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="text-sm text-muted-foreground">
-              <Package className="inline mr-1 h-4 w-4" />
-              Shipping to: {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
-            </div>
+          <div className="w-full flex justify-end">
             <Button asChild variant="outline" size="sm">
               <Link href="/">Continue Shopping</Link>
             </Button>
