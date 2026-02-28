@@ -95,6 +95,10 @@ export class ApiClient {
     return this.get(`/api/orders/${userId}`);
   }
 
+  async getOrder(userId: string, orderId: string) {
+    return this.get(`/api/orders/${userId}/${orderId}`);
+  }
+
   async createOrder(userId: string, items: any[]) {
     // Provide default shipping and billing info for demo purposes
     const orderData = {

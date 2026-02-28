@@ -44,7 +44,16 @@ export function OrderHistoryClient() {
   const sortedOrders = [...orders].sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
+      {/* Column headers - visible on sm+ screens */}
+      <div className="hidden sm:flex items-center justify-between gap-3 px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b">
+        <span className="min-w-[120px]">Order</span>
+        <span className="min-w-[130px]">Date</span>
+        <span className="min-w-[100px]">Status</span>
+        <span className="min-w-[70px] text-center">Items</span>
+        <span className="min-w-[90px] text-right">Total</span>
+        <span className="sm:ml-2 w-[85px]"></span>
+      </div>
       {sortedOrders.map((order) => (
         <OrderItemCard key={order.id} order={order} />
       ))}
