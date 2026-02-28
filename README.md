@@ -1,306 +1,306 @@
-# MyBasket Lite - Microservices Retail Application
+# MyBasket — Full-Stack Microservices Grocery App
 
-A modern, scalable retail application built with Next.js frontend and Node.js microservices architecture. This application has been transformed from a monolithic structure into a distributed microservices system.
+A modern, full-featured grocery shopping application built with **Next.js 15** (App Router) and a **Node.js microservices** backend. Features JWT authentication, multi-step checkout, AI-powered recommendations, and a fully responsive UI built with shadcn/ui + Tailwind CSS.
+
+---
 
 ## 🏗️ Architecture Overview
 
-The application consists of the following microservices:
-
-### Frontend
-- **Next.js Application** (Port 9002) - React-based frontend with server-side rendering
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Next.js Frontend (Port 9002)                               │
+│  React 19 · App Router · shadcn/ui · Tailwind CSS           │
+└────────────────────────┬────────────────────────────────────┘
+                         │ HTTP (Bearer JWT)
+┌────────────────────────▼────────────────────────────────────┐
+│  API Gateway (Port 3000)                                    │
+│  Express · Helmet · CORS · Rate Limiting · JWT Auth Middleware│
+└──┬──────────┬──────────┬──────────┬──────────┬──────────────┘
+   │          │          │          │          │
+┌──▼──┐  ┌───▼──┐  ┌───▼──┐  ┌───▼──┐  ┌───▼──┐
+│Prod.│  │Cart  │  │Order │  │ AI   │  │User  │
+│Svc  │  │Svc   │  │Svc   │  │ Svc  │  │Svc   │
+│3001 │  │3002  │  │3003  │  │3004  │  │3005  │
+└─────┘  └──────┘  └──────┘  └──────┘  └──────┘
+```
 
 ### Microservices
-- **API Gateway** (Port 3000) - Central entry point, routing, rate limiting, and load balancing
-- **Product Service** (Port 3001) - Product catalog management
-- **Cart Service** (Port 3002) - Shopping cart operations
-- **Order Service** (Port 3003) - Order processing and management
-- **AI Service** (Port 3004) - AI-powered recommendations and suggestions
+
+| Service | Port | Persistence | Description |
+|---------|------|-------------|-------------|
+| **API Gateway** | 3000 | — | Central routing, JWT auth enforcement, rate limiting, CORS |
+| **Product Service** | 3001 | In-memory | Product catalog with filtering, search & pagination |
+| **Cart Service** | 3002 | JSON file | Per-user shopping carts with product enrichment |
+| **Order Service** | 3003 | JSON file | Order creation, history, status management |
+| **AI Service** | 3004 | — | Gemini-powered grocery suggestions & recommendations |
+| **User Service** | 3005 | JSON file | Registration, login, JWT issuance, profile CRUD |
+
+---
+
+## ✨ Features
+
+### Authentication & Accounts
+- JWT-based authentication (24h expiry) with bcrypt password hashing
+- User registration, login, profile update, and account deletion
+- Auth-aware header with user dropdown (account, logout)
+- Protected routes — cart, checkout, orders, account redirect to login when unauthenticated
+
+### Shopping Experience
+- Product catalog with grid/card layout and "Add to Cart" buttons
+- Real-time cart badge count in header
+- Cart page with quantity controls and item removal
+- AI-powered grocery suggestions based on cart contents
+
+### Professional Checkout (3-Step)
+1. **Shipping** — Full address form (first/last name, street, apt, city, state, zip, country, phone), shipping method selection (Standard free / Express $9.99), billing address with "same as shipping" toggle
+2. **Payment** — Credit card, debit card, or cash-on-delivery selection with card number (auto-formatted), name, expiry, CVV fields
+3. **Review** — Order items, shipping/payment summaries with edit links, price breakdown (subtotal + shipping + 8% tax)
+
+- Pre-populates first/last name from logged-in user profile
+- Red `*` required field indicators with red border validation on submit
+- Sticky order summary sidebar with trust badges
+- Step indicator with progress line
+
+### Order History
+- Compact order list with status badges, item count, and totals
+- Individual order detail page showing items, price breakdown, shipping address, billing address, and payment method (from actual order data — not hardcoded)
+
+### UI & Accessibility
+- WCAG AA color contrast compliance (all CSS variables verified)
+- Unified dark-green bold buttons throughout the app
+- Responsive layout (mobile + desktop)
+- Descriptive placeholder text (no sample data illusions)
+- shadcn/ui component library (30+ components)
+
+---
 
 ## 🚀 Quick Start
 
-### Option 1: Development Mode (Recommended for development)
+### Prerequisites
+- Node.js 18+
+- npm
 
-1. **Install dependencies for all services:**
-   ```bash
-   npm install
-   npm run microservices:install
-   ```
+### 1. Install dependencies
+```bash
+npm install
+npm run microservices:install
+```
 
-2. **Start all microservices:**
-   ```bash
-   npm run microservices:start
-   ```
+### 2. Start microservices
+```bash
+npm run microservices:start
+```
 
-3. **Start the frontend (in a new terminal):**
-   ```bash
-   npm run dev
-   ```
+### 3. Start the frontend (new terminal)
+```bash
+npm run dev
+```
 
-4. **Verify everything is running:**
-   ```bash
-   npm run microservices:health
-   ```
+### 4. Verify health
+```bash
+npm run microservices:health
+```
 
-The application will be available at:
+**URLs:**
 - Frontend: http://localhost:9002
 - API Gateway: http://localhost:3000
-- Individual service health checks: http://localhost:300X/api/health
+- Swagger docs: http://localhost:300X/api-docs (each service)
 
-### Option 2: Docker (Recommended for production-like testing)
+### Docker (production-like)
+```bash
+npm run docker:build
+npm run docker:up
+# npm run docker:down to stop
+```
 
-1. **Build and start all services:**
-   ```bash
-   npm run docker:build
-   npm run docker:up
-   ```
-
-2. **View logs:**
-   ```bash
-   npm run docker:logs
-   ```
-
-3. **Stop all services:**
-   ```bash
-   npm run docker:down
-   ```
+---
 
 ## 📋 Available Scripts
 
-### Development Scripts
-- `npm run dev` - Start Next.js frontend in development mode
-- `npm run dev:full` - Start microservices and frontend together
-- `npm run build` - Build the Next.js application
-- `npm run start` - Start the Next.js application in production mode
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start Next.js frontend (dev mode) |
+| `npm run build` | Build the Next.js application |
+| `npm run start` | Start Next.js in production mode |
+| `npm run microservices:install` | Install deps for all microservices |
+| `npm run microservices:start` | Start all microservices (dev mode) |
+| `npm run microservices:stop` | Stop all running microservices |
+| `npm run microservices:health` | Health-check all microservices |
+| `npm run docker:build` | Build all Docker images |
+| `npm run docker:up` | Start all services with Docker Compose |
+| `npm run docker:down` | Stop and remove Docker containers |
+| `npm run docker:logs` | View logs from all services |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run TypeScript type checking |
 
-### Microservices Scripts
-- `npm run microservices:install` - Install dependencies for all microservices
-- `npm run microservices:start` - Start all microservices in development mode
-- `npm run microservices:stop` - Stop all running microservices
-- `npm run microservices:health` - Check health of all microservices
+---
 
-### Docker Scripts
-- `npm run docker:build` - Build all Docker images
-- `npm run docker:up` - Start all services with Docker Compose
-- `npm run docker:down` - Stop and remove all Docker containers
-- `npm run docker:logs` - View logs from all services
+## 🔧 API Reference
 
-### Testing Scripts
-- `npm run lint` - Run ESLint
-- `npm run typecheck` - Run TypeScript type checking
-- `npm run test:api` - Run API tests (when implemented)
+### Authentication (via API Gateway → User Service)
 
-## 🔧 Service Details
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/users/register` | No | Register new user |
+| POST | `/api/users/login` | No | Login, returns JWT |
+| GET | `/api/users/:id` | Yes | Get user profile |
+| PUT | `/api/users/:id` | Yes | Update profile |
+| DELETE | `/api/users/:id` | Yes | Delete account |
 
-### API Gateway (Port 3000)
-**Endpoints:**
-- `GET /health` - Overall system health check
-- `GET /info` - Gateway and service information
-- `/api/products/*` - Proxy to Product Service
-- `/api/cart/*` - Proxy to Cart Service
-- `/api/orders/*` - Proxy to Order Service
-- `/api/recommendations/*` - Proxy to AI Service
+### Products (Port 3001)
 
-### Product Service (Port 3001)
-**Endpoints:**
-- `GET /api/products` - List products with filtering and pagination
-- `GET /api/products/:id` - Get specific product
-- `POST /api/products` - Create new product
-- `PUT /api/products/:id` - Update product
-- `DELETE /api/products/:id` - Delete product
-- `GET /api/categories` - Get product categories
-- `GET /api/health` - Service health check
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products` | List products (supports `?search=`, `?category=`, `?page=`, `?limit=`) |
+| GET | `/api/products/:id` | Get single product |
+| GET | `/api/categories` | Get product categories |
 
-**Query Parameters for GET /api/products:**
-- `category` - Filter by category
-- `minPrice` - Minimum price filter
-- `maxPrice` - Maximum price filter
-- `inStock` - Filter by stock availability
-- `search` - Search in name/description
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 10, max: 100)
+### Cart (Port 3002) — Auth required
 
-### Cart Service (Port 3002)
-**Endpoints:**
-- `GET /api/cart/:userId` - Get user's cart
-- `POST /api/cart/:userId/items` - Add item to cart
-- `PUT /api/cart/:userId/items/:productId` - Update cart item quantity
-- `DELETE /api/cart/:userId/items/:productId` - Remove item from cart
-- `DELETE /api/cart/:userId` - Clear entire cart
-- `GET /api/cart/:userId/summary` - Get cart summary
-- `GET /api/health` - Service health check
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/cart/:userId` | Get user's cart |
+| POST | `/api/cart/:userId/items` | Add item (`{productId, quantity}`) |
+| PUT | `/api/cart/:userId/items/:productId` | Update quantity |
+| DELETE | `/api/cart/:userId/items/:productId` | Remove item |
+| DELETE | `/api/cart/:userId` | Clear cart |
 
-### Order Service (Port 3003)
-**Endpoints:**
-- `POST /api/orders/:userId` - Create new order
-- `GET /api/orders/:userId` - Get user's orders
-- `GET /api/orders/:userId/:orderId` - Get specific order
-- `PUT /api/orders/:userId/:orderId/status` - Update order status
-- `POST /api/orders/:userId/:orderId/cancel` - Cancel order
-- `GET /api/health` - Service health check
+### Orders (Port 3003) — Auth required
 
-### AI Service (Port 3004)
-**Endpoints:**
-- `POST /api/recommendations/grocery-suggestions` - Get grocery suggestions
-- `POST /api/recommendations/personalized` - Get personalized recommendations
-- `POST /api/grocery-suggestions` - Legacy endpoint
-- `GET /api/health` - Service health check
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/orders/:userId` | Create order (items, addresses, payment) |
+| GET | `/api/orders/:userId` | Get user's order history |
+| GET | `/api/orders/:userId/:orderId` | Get specific order details |
+| PUT | `/api/orders/:userId/:orderId/status` | Update order status |
 
-## 🧪 Testing the Application
+### AI Recommendations (Port 3004)
 
-### Manual Testing
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/recommendations/grocery-suggestions` | AI grocery suggestions |
+| POST | `/api/recommendations/personalized` | Personalized recommendations |
 
-1. **Start the services:**
-   ```bash
-   npm run microservices:start
-   npm run dev
-   ```
+### Gateway Health
 
-2. **Test Product Service:**
-   ```bash
-   curl http://localhost:3001/api/products
-   curl http://localhost:3001/api/products/1
-   curl http://localhost:3001/api/categories
-   ```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | System-wide health check |
+| GET | `/info` | Gateway & service info |
 
-3. **Test Cart Service:**
-   ```bash
-   # Add item to cart
-   curl -X POST http://localhost:3002/api/cart/user-123/items \
-     -H "Content-Type: application/json" \
-     -d '{"productId": "1", "quantity": 2}'
-   
-   # Get cart
-   curl http://localhost:3002/api/cart/user-123
-   ```
+---
 
-4. **Test AI Service:**
-   ```bash
-   curl -X POST http://localhost:3004/api/recommendations/grocery-suggestions \
-     -H "Content-Type: application/json" \
-     -d '{"cartItems": ["apples", "chicken"]}'
-   ```
+## 🧪 Testing with curl
 
-5. **Test through API Gateway:**
-   ```bash
-   curl http://localhost:3000/api/products
-   curl http://localhost:3000/health
-   ```
+```bash
+# Register
+curl -X POST http://localhost:3000/api/users/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demo","password":"pass","name":"Demo User","email":"demo@test.com"}'
 
-### Frontend Testing
+# Login (save token)
+TOKEN=$(curl -s -X POST http://localhost:3000/api/users/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demo","password":"pass"}' | jq -r '.token')
 
-1. Visit http://localhost:9002
-2. Browse products
-3. Add items to cart
-4. View cart and checkout
-5. Check order history
+# Add to cart (authenticated)
+curl -X POST http://localhost:3000/api/cart/USER_ID/items \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"productId":"1","quantity":2}'
 
-## 🔒 Environment Variables
-
-### Frontend (.env.local)
-```
-NEXT_PUBLIC_API_URL=http://localhost:3000
+# Get products (public)
+curl http://localhost:3000/api/products
 ```
 
-### Microservices (.env files in each service)
-```
-# Common
-NODE_ENV=development
-PORT=300X
-
-# Service-specific
-PRODUCT_SERVICE_URL=http://localhost:3001
-CART_SERVICE_URL=http://localhost:3002
-ORDER_SERVICE_URL=http://localhost:3003
-AI_SERVICE_URL=http://localhost:3004
-```
+---
 
 ## 📁 Project Structure
 
 ```
-├── src/                          # Next.js frontend source
-│   ├── app/                      # App router pages
-│   ├── components/               # React components
-│   ├── contexts/                 # React contexts
-│   ├── lib/                      # Utilities and API clients
-│   │   └── api/                  # Microservice API clients
-│   └── data/                     # Sample data (fallback)
-├── microservices/                # Microservices directory
-│   ├── api-gateway/              # API Gateway service
-│   ├── product-service/          # Product management service
-│   ├── cart-service/             # Shopping cart service
-│   ├── order-service/            # Order management service
-│   └── ai-service/               # AI recommendations service
-├── scripts/                      # Development scripts
-├── docker-compose.yml            # Docker configuration
-└── README.md                     # This file
+├── src/
+│   ├── app/                        # Next.js App Router pages
+│   │   ├── page.tsx                # Home — product listing
+│   │   ├── cart/page.tsx           # Cart page
+│   │   ├── checkout/page.tsx       # Checkout (3-step)
+│   │   ├── orders/page.tsx         # Order history
+│   │   ├── orders/[id]/page.tsx    # Order detail
+│   │   ├── login/page.tsx          # Login
+│   │   ├── register/page.tsx       # Registration
+│   │   └── account/page.tsx        # User profile management
+│   ├── components/
+│   │   ├── checkout/               # OrderReviewClient (multi-step)
+│   │   ├── cart/                   # CartView, CartItemCard
+│   │   ├── orders/                 # OrderHistoryClient, OrderDetailClient, OrderItemCard
+│   │   ├── products/               # ProductCard, ProductList
+│   │   ├── recommendations/        # GrocerySuggestions (AI)
+│   │   ├── layout/                 # AppLayout, Header, Footer
+│   │   └── ui/                     # 30+ shadcn/ui components
+│   ├── contexts/
+│   │   ├── AuthContext.tsx          # JWT auth state (login/register/logout)
+│   │   └── ApiCartContext.tsx       # Cart state (auth-aware)
+│   ├── hooks/                      # useCart, useApiCart, useApiOrders, useToast
+│   └── lib/
+│       ├── api/client.ts           # Unified API client class
+│       ├── types.ts                # TypeScript interfaces
+│       ├── session.ts              # Session/userId helpers
+│       └── utils.ts                # Tailwind merge utilities
+├── microservices/
+│   ├── api-gateway/                # Express gateway + JWT middleware
+│   ├── product-service/            # Product catalog
+│   ├── cart-service/               # Cart management (JSON persistence)
+│   ├── order-service/              # Order management (JSON persistence)
+│   ├── ai-service/                 # Gemini AI recommendations
+│   └── user-service/               # Auth + user CRUD (JSON persistence)
+├── scripts/                        # start/stop/health/build scripts
+├── docker-compose.yml
+└── Dockerfile
 ```
+
+---
+
+## 🔒 Environment Variables
+
+### Frontend (`.env.local`)
+```
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+### Microservices
+```
+NODE_ENV=development
+JWT_SECRET=mybasket-secret-key-change-in-production
+PRODUCT_SERVICE_URL=http://localhost:3001
+CART_SERVICE_URL=http://localhost:3002
+ORDER_SERVICE_URL=http://localhost:3003
+AI_SERVICE_URL=http://localhost:3004
+USER_SERVICE_URL=http://localhost:3005
+```
+
+---
 
 ## 🐛 Troubleshooting
 
-### Services Won't Start
-1. Check if ports are available: `npm run microservices:stop`
-2. Install dependencies: `npm run microservices:install`
-3. Check Node.js version (requires Node 18+)
+| Problem | Solution |
+|---------|----------|
+| Services won't start | `npm run microservices:stop` then restart. Check ports are free. |
+| Frontend can't connect | Verify services: `npm run microservices:health`. Check `.env.local`. |
+| 401 Unauthorized | Login first. JWT expires after 24h — re-login to get a fresh token. |
+| Swagger "Failed to fetch" | Gateway CORS/Helmet is configured. Ensure gateway is running on port 3000. |
+| Docker issues | `docker system prune -f` then `npm run docker:build`. |
 
-### Frontend Can't Connect to Services
-1. Verify microservices are running: `npm run microservices:health`
-2. Check API Gateway is accessible: `curl http://localhost:3000/health`
-3. Verify environment variables in `.env.local`
-
-### Docker Issues
-1. Ensure Docker is running
-2. Clean up: `docker system prune -f`
-3. Rebuild: `npm run docker:build`
-
-## 🚀 Deployment
-
-### Production Deployment
-
-1. **Build all services:**
-   ```bash
-   npm run docker:build
-   ```
-
-2. **Deploy with Docker Compose:**
-   ```bash
-   npm run docker:up
-   ```
-
-3. **For cloud deployment**, consider:
-   - Container orchestration (Kubernetes, ECS)
-   - Service mesh (Istio, Linkerd)
-   - API Gateway (Kong, Ambassador)
-   - Monitoring (Prometheus, Grafana)
-
-## 🛠️ Development
-
-### Adding New Features
-
-1. **Frontend**: Add components in `src/components/`
-2. **API**: Update service clients in `src/lib/api/`
-3. **Backend**: Modify appropriate microservice
-4. **Database**: Each service manages its own data
-
-### Code Style
-
-- TypeScript for type safety
-- ESLint for code quality
-- Prettier for formatting (configure as needed)
+---
 
 ## 📈 Scaling Considerations
 
-- Each microservice can be scaled independently
-- Use container orchestration for production
-- Implement caching (Redis) for frequently accessed data
-- Add monitoring and logging
-- Consider message queues for async communication
+- Each microservice scales independently
+- JSON file persistence is demo-only — swap to PostgreSQL/MongoDB for production
+- Add Redis for session caching and rate limiting state
+- Use a message queue (RabbitMQ/Kafka) for async order processing
+- Deploy behind a reverse proxy (Nginx/Traefik) with TLS
+- Container orchestration via Kubernetes or ECS
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes and test
-4. Submit a pull request
+---
 
 ## 📄 License
 
