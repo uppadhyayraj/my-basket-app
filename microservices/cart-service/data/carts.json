@@ -7,7 +7,16 @@
       "totalAmount": 0,
       "totalItems": 0,
       "createdAt": "2026-02-28T11:28:05.066Z",
-      "updatedAt": "2026-02-28T11:28:27.293Z"
+      "updatedAt": "2026-02-28T11:31:30.870Z"
+    },
+    "644c2b51-eb2b-4bed-ab55-70d7a6152ee2": {
+      "id": "bf830751-38b4-4ad5-b656-4e416b40d329",
+      "userId": "644c2b51-eb2b-4bed-ab55-70d7a6152ee2",
+      "items": [],
+      "totalAmount": 0,
+      "totalItems": 0,
+      "createdAt": "2026-02-28T11:36:03.728Z",
+      "updatedAt": "2026-02-28T11:36:03.728Z"
     }
   }
 }

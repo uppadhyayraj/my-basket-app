@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/api/client";
-import { getUserId } from "@/lib/session";
+import { getUserId, isLoggedIn } from "@/lib/session";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Order, CartItem } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,8 +22,16 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isLoggedIn: authLoggedIn, isLoading: authLoading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!authLoggedIn) {
+      router.replace("/login");
+      return;
+    }
+
     const fetchOrder = async () => {
       try {
         setLoading(true);
@@ -36,7 +46,7 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
       }
     };
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, authLoggedIn, authLoading]);
 
   if (loading) {
     return (

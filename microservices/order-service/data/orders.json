@@ -2,6 +2,55 @@
   "orders": {
     "7d21629f-0826-4356-9c6b-207064b91478": [
       {
+        "id": "f107526e-856d-40dd-8a7e-21499a2774ee",
+        "userId": "7d21629f-0826-4356-9c6b-207064b91478",
+        "items": [
+          {
+            "id": "6",
+            "name": "Chicken Breast",
+            "price": 9.99,
+            "description": "Boneless, skinless chicken breast, lean and versatile.",
+            "image": "https://images.unsplash.com/photo-1633096013004-e2cb4023b560?w=600&h=400&fit=crop&auto=format",
+            "dataAiHint": "chicken meat",
+            "quantity": 1
+          },
+          {
+            "id": "7",
+            "name": "Brown Rice",
+            "price": 2.49,
+            "description": "Long-grain brown rice, a healthy whole grain option.",
+            "image": "https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=600&h=400&fit=crop&auto=format",
+            "dataAiHint": "rice grains",
+            "quantity": 1
+          }
+        ],
+        "totalAmount": 12.48,
+        "status": "pending",
+        "shippingAddress": {
+          "street": "123 Demo Street",
+          "city": "Demo City",
+          "state": "CA",
+          "zipCode": "12345",
+          "country": "USA"
+        },
+        "billingAddress": {
+          "street": "123 Demo Street",
+          "city": "Demo City",
+          "state": "CA",
+          "zipCode": "12345",
+          "country": "USA"
+        },
+        "paymentMethod": {
+          "type": "credit_card",
+          "last4": "1234",
+          "brand": "Demo Card"
+        },
+        "orderDate": "2026-02-28T11:31:30.843Z",
+        "estimatedDelivery": "2026-03-05T11:31:30.843Z",
+        "createdAt": "2026-02-28T11:31:30.843Z",
+        "updatedAt": "2026-02-28T11:31:30.843Z"
+      },
+      {
         "id": "435935a5-64fb-4b48-a2b1-a77082fa605b",
         "userId": "7d21629f-0826-4356-9c6b-207064b91478",
         "items": [

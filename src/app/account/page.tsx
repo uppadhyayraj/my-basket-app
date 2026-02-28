@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -42,10 +42,11 @@ export default function AccountPage() {
   const [deleting, setDeleting] = useState(false);
 
   // Redirect if not logged in (after loading completes)
-  if (!isLoading && !isLoggedIn) {
-    router.replace("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!isLoading && !isLoggedIn) {
+      router.replace("/login");
+    }
+  }, [isLoading, isLoggedIn, router]);
 
   if (isLoading || !user) {
     return (

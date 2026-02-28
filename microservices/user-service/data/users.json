@@ -8,6 +8,15 @@
       "email": "raj.uppadhyay@dq.com",
       "createdAt": "2026-02-28T11:28:05.024Z",
       "updatedAt": "2026-02-28T11:28:05.024Z"
+    },
+    {
+      "id": "644c2b51-eb2b-4bed-ab55-70d7a6152ee2",
+      "username": "john@example.com",
+      "password": "$2a$10$LqC.33B1/MlH2iNWqRT/K.FJHG9OevjQtNSlDiXEpdF3GLHNot4hm",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "createdAt": "2026-02-28T11:36:03.713Z",
+      "updatedAt": "2026-02-28T11:36:03.713Z"
     }
   ]
 }

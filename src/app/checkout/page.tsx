@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { OrderReviewClient } from "@/components/checkout/OrderReviewClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -9,17 +10,18 @@ export default function CheckoutPage() {
   const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoading && !isLoggedIn) {
+      router.replace("/login");
+    }
+  }, [isLoading, isLoggedIn, router]);
+
+  if (isLoading || !isLoggedIn) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
-  }
-
-  if (!isLoggedIn) {
-    router.replace("/login");
-    return null;
   }
 
   return (

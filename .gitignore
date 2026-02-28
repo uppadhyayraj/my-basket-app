@@ -45,3 +45,6 @@ next-env.d.ts
 firebase-debug.log
 firestore-debug.log
 microservices/ai-service/node_modules/
+microservices/user-service/data/users.json
+microservices/order-service/data/orders.json
+microservices/order-service/data/orders.json
