@@ -46,7 +46,7 @@ export const sampleProducts: Product[] = [
     name: 'Chicken Breast',
     price: 9.99,
     description: 'Boneless, skinless chicken breast, lean and versatile.',
-    image: 'https://images.unsplash.com/photo-1604503468506-a8da13d11d36?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1633096013004-e2cb4023b560?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'chicken meat',
   },
   {
@@ -86,7 +86,7 @@ export const sampleProducts: Product[] = [
     name: 'Organic Tomatoes',
     price: 3.29,
     description: 'Vine-ripened organic tomatoes, full of flavor.',
-    image: 'https://images.unsplash.com/photo-1546470427-0d538dc6e4b5?w=600&h=400&fit=crop&auto=format',
+    image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&h=400&fit=crop&auto=format',
     dataAiHint: 'tomatoes vegetables',
   },
   {
