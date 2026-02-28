@@ -46,9 +46,9 @@ export function GrocerySuggestions() {
   }
 
   return (
-    <Card className="mt-8 shadow-lg border-accent">
+    <Card className="mt-8 shadow-lg border-primary">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center text-lg text-accent">
+        <CardTitle className="flex items-center text-lg text-primary">
           <Lightbulb className="mr-2 h-5 w-5" />
           You Might Also Need...
         </CardTitle>
@@ -56,21 +56,21 @@ export function GrocerySuggestions() {
       <CardContent>
         {isLoading && (
           <div className="flex items-center justify-center py-4">
-            <Loader2 className="mr-2 h-6 w-6 animate-spin text-accent" />
+            <Loader2 className="mr-2 h-6 w-6 animate-spin text-primary" />
             <p className="text-muted-foreground">Generating suggestions...</p>
           </div>
         )}
         {error && (
           <div className="text-destructive py-4">
             <p>{error}</p>
-            <Button onClick={fetchSuggestions} variant="link" className="p-0 h-auto mt-1 text-accent">Try again</Button>
+            <Button onClick={fetchSuggestions} variant="link" className="p-0 h-auto mt-1 text-primary">Try again</Button>
           </div>
         )}
         {!isLoading && !error && suggestions.length > 0 && (
           <ul className="space-y-2">
             {suggestions.map((suggestion, index) => (
               <li key={index} className="flex items-center">
-                 <Badge variant="outline" className="text-sm py-1 px-3 border-primary text-primary-foreground bg-primary/10">
+                 <Badge variant="outline" className="text-sm py-1 px-3 border-primary text-primary bg-primary/10">
                   {suggestion}
                 </Badge>
               </li>

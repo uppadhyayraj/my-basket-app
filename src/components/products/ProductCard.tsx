@@ -66,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <Button 
           onClick={handleAddToCart} 
           disabled={isLoading}
-          className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <ShoppingCart className="mr-2 h-4 w-4" /> 
           {isLoading ? "Adding..." : "Add to Cart"}

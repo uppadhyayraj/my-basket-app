@@ -36,7 +36,7 @@ export function CartView() {
         <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-semibold text-foreground mb-2">Your cart is empty</h2>
         <p className="text-muted-foreground mb-6">Looks like you haven't added anything to your cart yet.</p>
-        <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
           <Link href="/">Start Shopping</Link>
         </Button>
       </div>

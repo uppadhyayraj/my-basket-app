@@ -17,24 +17,24 @@ body {
     --popover: 120 60% 99%;
     --popover-foreground: 120 25% 15%;
 
-    --primary: 120 73% 60%; /* #90EE90 LightGreen - Soft, desaturated green */
-    --primary-foreground: 120 25% 10%; /* Dark green text on primary green */
+    --primary: 120 73% 35%; /* Darker green - accessible as text (~7:1 on white) */
+    --primary-foreground: 0 0% 100%; /* White text on primary green */
 
     --secondary: 120 50% 90%; /* Lighter shade of primary */
     --secondary-foreground: 120 25% 15%;
 
     --muted: 120 40% 85%;
-    --muted-foreground: 120 25% 35%;
+    --muted-foreground: 120 20% 30%;
 
-    --accent: 84 100% 59%; /* #ADFF2F GreenYellow - Slightly more saturated yellow-green */
-    --accent-foreground: 84 25% 10%; /* Dark green/black text on accent */
+    --accent: 84 81% 44%; /* Toned-down olive-green - accessible and less harsh */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
 
     --destructive: 0 70% 60%; /* Standard red for destructive actions */
     --destructive-foreground: 0 0% 100%;
 
     --border: 120 30% 80%;
     --input: 120 30% 88%;
-    --ring: 120 73% 65%; /* Slightly lighter primary for focus rings */
+    --ring: 120 73% 40%; /* Matches new primary tone for focus rings */
 
     --radius: 0.5rem;
 
@@ -67,8 +67,8 @@ body {
     --popover: 120 10% 12%;
     --popover-foreground: 120 25% 85%;
 
-    --primary: 120 60% 50%;
-    --primary-foreground: 120 25% 95%;
+    --primary: 120 60% 55%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 120 15% 20%;
     --secondary-foreground: 120 25% 85%;
@@ -76,8 +76,8 @@ body {
     --muted: 120 15% 25%;
     --muted-foreground: 120 25% 65%;
 
-    --accent: 84 80% 50%;
-    --accent-foreground: 84 25% 95%;
+    --accent: 84 75% 55%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 100%;

@@ -110,7 +110,7 @@ export function OrderReviewClient() {
         <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-semibold text-foreground mb-2">Your cart is empty</h2>
         <p className="text-muted-foreground mb-6">Add items to your cart to proceed with checkout.</p>
-        <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
           <Link href="/">Continue Shopping</Link>
         </Button>
       </div>
@@ -168,7 +168,7 @@ export function OrderReviewClient() {
         <CardFooter>
           <Button 
             onClick={handlePlaceOrder} 
-            className="w-full text-lg py-6 bg-accent text-accent-foreground hover:bg-accent/90"
+            className="w-full text-lg py-6 bg-primary text-primary-foreground hover:bg-primary/90"
             disabled={!items || items.length === 0 || isPlacingOrder}
           >
             {isPlacingOrder ? (
