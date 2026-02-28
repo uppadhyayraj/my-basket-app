@@ -2,6 +2,46 @@
   "orders": {
     "7d21629f-0826-4356-9c6b-207064b91478": [
       {
+        "id": "73fa3965-bebb-4482-bf90-803229f8b318",
+        "userId": "7d21629f-0826-4356-9c6b-207064b91478",
+        "items": [
+          {
+            "id": "1",
+            "name": "Organic Apples",
+            "price": 3.99,
+            "description": "Crisp and juicy organic apples, perfect for snacking or baking.",
+            "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&h=400&fit=crop&auto=format",
+            "dataAiHint": "apples fruit",
+            "quantity": 1
+          }
+        ],
+        "totalAmount": 3.99,
+        "status": "pending",
+        "shippingAddress": {
+          "street": "27 H Stamford Park Road",
+          "city": "Auckland",
+          "state": "Auckland",
+          "zipCode": "1048",
+          "country": "New Zealand"
+        },
+        "billingAddress": {
+          "street": "27 H Stamford Park Road",
+          "city": "Auckland",
+          "state": "Auckland",
+          "zipCode": "1048",
+          "country": "New Zealand"
+        },
+        "paymentMethod": {
+          "type": "credit_card",
+          "last4": "1111",
+          "brand": "Credit Card"
+        },
+        "orderDate": "2026-02-28T12:01:15.260Z",
+        "estimatedDelivery": "2026-03-05T12:01:15.260Z",
+        "createdAt": "2026-02-28T12:01:15.260Z",
+        "updatedAt": "2026-02-28T12:01:15.260Z"
+      },
+      {
         "id": "f107526e-856d-40dd-8a7e-21499a2774ee",
         "userId": "7d21629f-0826-4356-9c6b-207064b91478",
         "items": [

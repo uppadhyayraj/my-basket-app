@@ -112,39 +112,12 @@ export class ApiClient {
     return this.get(`/api/orders/${userId}/${orderId}`);
   }
 
-  async createOrder(userId: string, items: any[]) {
-    // Provide default shipping and billing info for demo purposes
-    const orderData = {
-      items: items.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        description: item.description,
-        image: item.image,
-        dataAiHint: item.dataAiHint,
-        quantity: item.quantity,
-      })),
-      shippingAddress: {
-        street: "123 Demo Street",
-        city: "Demo City",
-        state: "CA",
-        zipCode: "12345",
-        country: "USA"
-      },
-      billingAddress: {
-        street: "123 Demo Street",
-        city: "Demo City", 
-        state: "CA",
-        zipCode: "12345",
-        country: "USA"
-      },
-      paymentMethod: {
-        type: "credit_card" as const,
-        last4: "1234",
-        brand: "Demo Card"
-      }
-    };
-    
+  async createOrder(userId: string, orderData: {
+    items: any[];
+    shippingAddress: { street: string; city: string; state: string; zipCode: string; country: string };
+    billingAddress: { street: string; city: string; state: string; zipCode: string; country: string };
+    paymentMethod: { type: string; last4?: string; brand?: string };
+  }) {
     return this.post(`/api/orders/${userId}`, orderData);
   }
 
