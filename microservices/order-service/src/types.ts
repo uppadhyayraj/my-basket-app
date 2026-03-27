@@ -2,6 +2,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  discount?: number; // Percentage discount (0.00 – 100.00), up to two decimal places
   description: string;
   image: string;
   dataAiHint: string;

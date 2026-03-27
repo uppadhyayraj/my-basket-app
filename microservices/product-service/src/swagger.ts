@@ -56,6 +56,14 @@ const options: swaggerJsdoc.Options = {
               description: 'Product price',
               example: 2.99,
             },
+            discount: {
+              type: 'number',
+              format: 'float',
+              minimum: 0,
+              maximum: 100,
+              description: 'Percentage discount applied to the product price (0.00 – 100.00), up to two decimal places',
+              example: 10.50,
+            },
             description: {
               type: 'string',
               description: 'Product description',

@@ -17,6 +17,100 @@
       "totalItems": 0,
       "createdAt": "2026-02-28T11:36:03.728Z",
       "updatedAt": "2026-02-28T11:36:03.728Z"
+    },
+    "user123": {
+      "id": "f5b596d0-f3bc-4eef-bbfb-27600f2a19a9",
+      "userId": "user123",
+      "items": [
+        {
+          "id": "1",
+          "name": "Organic Apples",
+          "price": 3.99,
+          "discount": 10,
+          "description": "Crisp and juicy organic apples, perfect for snacking or baking.",
+          "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&h=400&fit=crop&auto=format",
+          "dataAiHint": "apples fruit",
+          "category": "fruits",
+          "inStock": true,
+          "createdAt": "2026-03-24T07:10:25.428Z",
+          "updatedAt": "2026-03-24T07:10:25.428Z",
+          "quantity": 2,
+          "addedAt": "2026-03-24T07:12:04.617Z"
+        },
+        {
+          "id": "6",
+          "name": "Chicken Breast",
+          "price": 9.99,
+          "discount": 25.99,
+          "description": "Boneless, skinless chicken breast, lean and versatile.",
+          "image": "https://images.unsplash.com/photo-1633096013004-e2cb4023b560?w=600&h=400&fit=crop&auto=format",
+          "dataAiHint": "chicken meat",
+          "category": "meat",
+          "inStock": true,
+          "createdAt": "2026-03-24T07:10:25.428Z",
+          "updatedAt": "2026-03-24T07:11:55.981Z",
+          "quantity": 1,
+          "addedAt": "2026-03-24T07:12:13.674Z"
+        }
+      ],
+      "totalAmount": 17.97,
+      "totalItems": 3,
+      "createdAt": "2026-03-24T07:12:01.631Z",
+      "updatedAt": "2026-03-24T07:12:13.674Z"
+    },
+    "testuser-1774336529460": {
+      "id": "d219b80d-2a5b-44d8-b4bb-81029fc0ca5c",
+      "userId": "testuser-1774336529460",
+      "items": [
+        {
+          "id": "1",
+          "name": "Organic Apples",
+          "price": 3.99,
+          "discount": 10,
+          "description": "Crisp and juicy organic apples, perfect for snacking or baking.",
+          "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&h=400&fit=crop&auto=format",
+          "dataAiHint": "apples fruit",
+          "category": "fruits",
+          "inStock": true,
+          "createdAt": "2026-03-24T07:10:25.428Z",
+          "updatedAt": "2026-03-24T07:10:25.428Z",
+          "quantity": 2,
+          "addedAt": "2026-03-24T07:15:29.509Z"
+        },
+        {
+          "id": "6",
+          "name": "Chicken Breast",
+          "price": 9.99,
+          "discount": 25.99,
+          "description": "Boneless, skinless chicken breast, lean and versatile.",
+          "image": "https://images.unsplash.com/photo-1633096013004-e2cb4023b560?w=600&h=400&fit=crop&auto=format",
+          "dataAiHint": "chicken meat",
+          "category": "meat",
+          "inStock": true,
+          "createdAt": "2026-03-24T07:10:25.428Z",
+          "updatedAt": "2026-03-24T07:11:55.981Z",
+          "quantity": 1,
+          "addedAt": "2026-03-24T07:15:29.524Z"
+        },
+        {
+          "id": "2",
+          "name": "Whole Wheat Bread",
+          "price": 4.49,
+          "description": "Freshly baked whole wheat bread, rich in fiber.",
+          "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=400&fit=crop&auto=format",
+          "dataAiHint": "bread bakery",
+          "category": "bakery",
+          "inStock": true,
+          "createdAt": "2026-03-24T07:10:25.428Z",
+          "updatedAt": "2026-03-24T07:10:25.428Z",
+          "quantity": 1,
+          "addedAt": "2026-03-24T07:15:29.556Z"
+        }
+      ],
+      "totalAmount": 22.46,
+      "totalItems": 4,
+      "createdAt": "2026-03-24T07:15:29.493Z",
+      "updatedAt": "2026-03-24T07:15:29.556Z"
     }
   }
 }

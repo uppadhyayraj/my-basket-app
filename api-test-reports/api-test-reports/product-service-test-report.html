@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Service API Test Report - Happy Path Scenarios (discount field)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .theme-dark {
+            color: #e0e0e0;
+            background-color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-dark .header {
+            background: #2d2d2d;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2em;
+        }
+
+        .theme-dark .header h1 {
+            color: #ecf0f1;
+        }
+
+        .session-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .session-id {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .theme-dark .session-id {
+            background: #3a3a3a;
+        }
+
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-running {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .summary {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .theme-dark .summary {
+            background: #2d2d2d;
+        }
+
+        .summary h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .theme-dark .summary h2 {
+            color: #ecf0f1;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #6c757d;
+        }
+
+        .theme-dark .summary-card {
+            background: #3a3a3a;
+        }
+
+        .summary-card.success {
+            border-left-color: #28a745;
+        }
+
+        .summary-card.failure {
+            border-left-color: #dc3545;
+        }
+
+        .summary-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .theme-dark .summary-value {
+            color: #ecf0f1;
+        }
+
+        .summary-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .logs {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .theme-dark .logs {
+            background: #2d2d2d;
+        }
+
+        .logs h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .theme-dark .logs h2 {
+            color: #ecf0f1;
+        }
+
+        .log-entry {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .theme-dark .log-entry {
+            border-color: #4a4a4a;
+        }
+
+        .log-header {
+            background: #f8f9fa;
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-dark .log-header {
+            background: #3a3a3a;
+        }
+
+        .log-header:hover {
+            background: #e9ecef;
+        }
+
+        .theme-dark .log-header:hover {
+            background: #4a4a4a;
+        }
+
+        .log-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .method-get { background: #28a745; color: white; }
+        .method-post { background: #007bff; color: white; }
+        .method-put { background: #ffc107; color: black; }
+        .method-delete { background: #dc3545; color: white; }
+        .method-patch { background: #6f42c1; color: white; }
+
+        .status-code {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-2xx { background: #28a745; color: white; }
+        .status-3xx { background: #ffc107; color: black; }
+        .status-4xx { background: #fd7e14; color: white; }
+        .status-5xx { background: #dc3545; color: white; }
+
+        .validation-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .validation-badge.passed {
+            background: #28a745;
+            color: white;
+        }
+
+        .validation-badge.failed {
+            background: #dc3545;
+            color: white;
+        }
+
+        .log-body {
+            padding: 20px;
+            background: white;
+            display: none;
+        }
+
+        .theme-dark .log-body {
+            background: #2d2d2d;
+        }
+
+        .log-body.expanded {
+            display: block;
+        }
+
+        .request-response-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .request-section, .response-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .theme-dark .request-section,
+        .theme-dark .response-section {
+            background: #3a3a3a;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .theme-dark .section-title {
+            color: #ecf0f1;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .validation-results {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .validation-passed {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .validation-failed {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .validation-comparison {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .expected-section, .actual-section {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .theme-dark .expected-section,
+        .theme-dark .actual-section {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .comparison-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .comparison-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            padding: 5px;
+            background: #f8f9fa;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        .theme-dark .comparison-value {
+            background: #2d2d2d;
+        }
+
+        .timing-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .theme-dark .timing-section {
+            background: #2d2d2d;
+        }
+
+        .timing-chart {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .theme-dark .timing-chart {
+            background: #3a3a3a;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .request-response-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        </style>
+</head>
+<body class="theme-light">
+    <div class="container">
+        <header class="header">
+            <h1>Product Service API Test Report - Happy Path Scenarios (discount field)</h1>
+            <div class="session-info">
+                <span class="session-id">Session: product-service-happy-path-1742795000</span>
+                <span class="status status-running">running</span>
+            </div>
+        </header>
+
+        <section class="summary">
+            <h2>Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-value">4</div>
+                    <div class="summary-label">Total Requests</div>
+                </div>
+                <div class="summary-card success">
+                    <div class="summary-value">4</div>
+                    <div class="summary-label">Successful</div>
+                </div>
+                <div class="summary-card failure">
+                    <div class="summary-value">0</div>
+                    <div class="summary-label">Failed</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value">100%</div>
+                    <div class="summary-label">Success Rate</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value">0ms</div>
+                    <div class="summary-label">Duration</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value">100%</div>
+                    <div class="summary-label">Validation Rate</div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="timing-section">
+            <h2>Timing Analysis</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-value">13202ms</div>
+                    <div class="summary-label">Total Duration</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value">4</div>
+                    <div class="summary-label">Requests</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value">4401ms</div>
+                    <div class="summary-label">Avg Interval</div>
+                </div>
+            </div>
+            <div class="timing-chart">
+                <h3>Request Timeline</h3>
+                
+                    <div style="margin: 5px 0; padding: 5px; background: rgba(0,123,255,0.1); border-radius: 3px;">
+                        <strong>GET http://localhost:3001/api/products</strong> 
+                        - 3ms 
+                        <span class="status-code status-2xx">200</span>
+                    </div>
+                
+                    <div style="margin: 5px 0; padding: 5px; background: rgba(0,123,255,0.1); border-radius: 3px;">
+                        <strong>GET http://localhost:3001/api/products/1</strong> 
+                        - 4209ms 
+                        <span class="status-code status-2xx">200</span>
+                    </div>
+                
+                    <div style="margin: 5px 0; padding: 5px; background: rgba(0,123,255,0.1); border-radius: 3px;">
+                        <strong>POST http://localhost:3001/api/products</strong> 
+                        - 9587ms 
+                        <span class="status-code status-2xx">201</span>
+                    </div>
+                
+                    <div style="margin: 5px 0; padding: 5px; background: rgba(0,123,255,0.1); border-radius: 3px;">
+                        <strong>PUT http://localhost:3001/api/products/6</strong> 
+                        - 13205ms 
+                        <span class="status-code status-2xx">200</span>
+                    </div>
+                
+            </div>
+        </section>
+        
+
+        <section class="logs">
+            <h2>Request Logs</h2>
+            <div class="logs-container">
+                
+        <div class="log-entry">
+            <div class="log-header">
+                <div class="log-title">
+                    <span class="arrow">▶</span>
+                    <span class="method method-get">GET</span>
+                    <span>http://localhost:3001/api/products</span>
+                    <span class="status-code status-2xx">200 OK</span>
+                    <span class="validation-badge passed">
+                            ✓ Validation
+                        </span>
+                </div>
+                <div class="log-time">3/24/2026, 8:11:42 PM</div>
+            </div>
+            <div class="log-body">
+                
+        <div class="request-response-grid">
+            <div class="request-section">
+                <div class="section-title">Request</div>
+                
+                    <p><strong>Method:</strong> GET</p>
+                    <p><strong>URL:</strong> http://localhost:3001/api/products</p>
+                    
+                        <p><strong>Headers:</strong></p>
+                        <div class="code-block">{
+  &quot;Content-Type&quot;: &quot;application/json&quot;
+}</div>
+                    
+                    
+                
+            </div>
+            <div class="response-section">
+                <div class="section-title">Response</div>
+                
+                    <p><strong>Status:</strong> 200 - OK</p>
+                    <p><strong>Content Type:</strong> application/json; charset=utf-8</p>
+                    
+                    
+                        <p><strong>Body:</strong></p>
+                        <div class="code-block">{
+  &quot;products&quot;: [
+    {
+      &quot;id&quot;: &quot;1&quot;,
+      &quot;name&quot;: &quot;Organic Apples&quot;,
+      &quot;price&quot;: 3.99,
+      &quot;discount&quot;: 10,
+      &quot;description&quot;: &quot;Crisp and juicy organic apples, perfect for snacking or baking.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;apples fruit&quot;,
+      &quot;category&quot;: &quot;fruits&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;2&quot;,
+      &quot;name&quot;: &quot;Whole Wheat Bread&quot;,
+      &quot;price&quot;: 4.49,
+      &quot;description&quot;: &quot;Freshly baked whole wheat bread, rich in fiber.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;bread bakery&quot;,
+      &quot;category&quot;: &quot;bakery&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;3&quot;,
+      &quot;name&quot;: &quot;Free-Range Eggs&quot;,
+      &quot;price&quot;: 5.99,
+      &quot;description&quot;: &quot;A dozen large free-range eggs, great for breakfast.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;eggs dairy&quot;,
+      &quot;category&quot;: &quot;dairy&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;4&quot;,
+      &quot;name&quot;: &quot;Organic Spinach&quot;,
+      &quot;price&quot;: 2.99,
+      &quot;description&quot;: &quot;A bag of fresh organic spinach, packed with nutrients.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;spinach vegetables&quot;,
+      &quot;category&quot;: &quot;vegetables&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;5&quot;,
+      &quot;name&quot;: &quot;Almond Milk&quot;,
+      &quot;price&quot;: 3.79,
+      &quot;description&quot;: &quot;Unsweetened almond milk, a great dairy-free alternative.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1556881286-fc6915169721?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;almond milk&quot;,
+      &quot;category&quot;: &quot;dairy&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;6&quot;,
+      &quot;name&quot;: &quot;Chicken Breast&quot;,
+      &quot;price&quot;: 9.99,
+      &quot;discount&quot;: 15.5,
+      &quot;description&quot;: &quot;Boneless, skinless chicken breast, lean and versatile.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1633096013004-e2cb4023b560?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;chicken meat&quot;,
+      &quot;category&quot;: &quot;meat&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;7&quot;,
+      &quot;name&quot;: &quot;Brown Rice&quot;,
+      &quot;price&quot;: 2.49,
+      &quot;description&quot;: &quot;Long-grain brown rice, a healthy whole grain option.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;rice grains&quot;,
+      &quot;category&quot;: &quot;grains&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;8&quot;,
+      &quot;name&quot;: &quot;Greek Yogurt&quot;,
+      &quot;price&quot;: 4.29,
+      &quot;description&quot;: &quot;Plain Greek yogurt, high in protein.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;yogurt dairy&quot;,
+      &quot;category&quot;: &quot;dairy&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;9&quot;,
+      &quot;name&quot;: &quot;Avocado&quot;,
+      &quot;price&quot;: 1.99,
+      &quot;description&quot;: &quot;Creamy and delicious Haas avocado.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;avocado fruit&quot;,
+      &quot;category&quot;: &quot;fruits&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    },
+    {
+      &quot;id&quot;: &quot;10&quot;,
+      &quot;name&quot;: &quot;Dark Chocolate Bar&quot;,
+      &quot;price&quot;: 3.49,
+      &quot;description&quot;: &quot;70% cacao dark chocolate bar, rich and indulgent.&quot;,
+      &quot;image&quot;: &quot;https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+      &quot;dataAiHint&quot;: &quot;chocolate snack&quot;,
+      &quot;category&quot;: &quot;snacks&quot;,
+      &quot;inStock&quot;: true,
+      &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+      &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+    }
+  ],
+  &quot;total&quot;: 15,
+  &quot;page&quot;: 1,
+  &quot;limit&quot;: 10,
+  &quot;totalPages&quot;: 2
+}</div>
+                    
+                
+            </div>
+        </div>
+        
+                
+        <div class="validation-results validation-passed">
+            <h4>Validation Results</h4>
+            
+            <!-- Status Code Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Status Code:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">200</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">200</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Content Type Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Content Type:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">application/json</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">application/json; charset=utf-8</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Body Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Body Validation:</strong> ✓ Passed</p>
+                <p><strong>Reason:</strong> No body expectation set.</p>
+                
+                
+            </div>
+        </div>
+        
+                
+            </div>
+        </div>
+        
+        <div class="log-entry">
+            <div class="log-header">
+                <div class="log-title">
+                    <span class="arrow">▶</span>
+                    <span class="method method-get">GET</span>
+                    <span>http://localhost:3001/api/products/1</span>
+                    <span class="status-code status-2xx">200 OK</span>
+                    <span class="validation-badge passed">
+                            ✓ Validation
+                        </span>
+                </div>
+                <div class="log-time">3/24/2026, 8:11:46 PM</div>
+            </div>
+            <div class="log-body">
+                
+        <div class="request-response-grid">
+            <div class="request-section">
+                <div class="section-title">Request</div>
+                
+                    <p><strong>Method:</strong> GET</p>
+                    <p><strong>URL:</strong> http://localhost:3001/api/products/1</p>
+                    
+                        <p><strong>Headers:</strong></p>
+                        <div class="code-block">{
+  &quot;Content-Type&quot;: &quot;application/json&quot;
+}</div>
+                    
+                    
+                
+            </div>
+            <div class="response-section">
+                <div class="section-title">Response</div>
+                
+                    <p><strong>Status:</strong> 200 - OK</p>
+                    <p><strong>Content Type:</strong> application/json; charset=utf-8</p>
+                    
+                    
+                        <p><strong>Body:</strong></p>
+                        <div class="code-block">{
+  &quot;id&quot;: &quot;1&quot;,
+  &quot;name&quot;: &quot;Organic Apples&quot;,
+  &quot;price&quot;: 3.99,
+  &quot;discount&quot;: 10,
+  &quot;description&quot;: &quot;Crisp and juicy organic apples, perfect for snacking or baking.&quot;,
+  &quot;image&quot;: &quot;https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+  &quot;dataAiHint&quot;: &quot;apples fruit&quot;,
+  &quot;category&quot;: &quot;fruits&quot;,
+  &quot;inStock&quot;: true,
+  &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+}</div>
+                    
+                
+            </div>
+        </div>
+        
+                
+        <div class="validation-results validation-passed">
+            <h4>Validation Results</h4>
+            
+            <!-- Status Code Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Status Code:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">200</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">200</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Content Type Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Content Type:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">application/json</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">application/json; charset=utf-8</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Body Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Body Validation:</strong> ✓ Passed</p>
+                <p><strong>Reason:</strong> Partial/exact body match succeeded.</p>
+                
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">{
+  &quot;id&quot;: &quot;1&quot;,
+  &quot;discount&quot;: 10
+}</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">{
+  &quot;id&quot;: &quot;1&quot;,
+  &quot;name&quot;: &quot;Organic Apples&quot;,
+  &quot;price&quot;: 3.99,
+  &quot;discount&quot;: 10,
+  &quot;description&quot;: &quot;Crisp and juicy organic apples, perfect for snacking or baking.&quot;,
+  &quot;image&quot;: &quot;https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+  &quot;dataAiHint&quot;: &quot;apples fruit&quot;,
+  &quot;category&quot;: &quot;fruits&quot;,
+  &quot;inStock&quot;: true,
+  &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;
+}</div>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+        
+                
+            </div>
+        </div>
+        
+        <div class="log-entry">
+            <div class="log-header">
+                <div class="log-title">
+                    <span class="arrow">▶</span>
+                    <span class="method method-post">POST</span>
+                    <span>http://localhost:3001/api/products</span>
+                    <span class="status-code status-2xx">201 Created</span>
+                    <span class="validation-badge passed">
+                            ✓ Validation
+                        </span>
+                </div>
+                <div class="log-time">3/24/2026, 8:11:52 PM</div>
+            </div>
+            <div class="log-body">
+                
+        <div class="request-response-grid">
+            <div class="request-section">
+                <div class="section-title">Request</div>
+                
+                    <p><strong>Method:</strong> POST</p>
+                    <p><strong>URL:</strong> http://localhost:3001/api/products</p>
+                    
+                        <p><strong>Headers:</strong></p>
+                        <div class="code-block">{
+  &quot;Content-Type&quot;: &quot;application/json&quot;
+}</div>
+                    
+                    
+                        <p><strong>Body:</strong></p>
+                        <div class="code-block">{
+  &quot;name&quot;: &quot;Discounted Mangoes&quot;,
+  &quot;price&quot;: 5.99,
+  &quot;discount&quot;: 12.5,
+  &quot;description&quot;: &quot;Sweet tropical mangoes, now at a discount.&quot;,
+  &quot;image&quot;: &quot;https://images.unsplash.com/photo-1553279768-865429fa0078?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+  &quot;dataAiHint&quot;: &quot;mango fruit&quot;,
+  &quot;category&quot;: &quot;fruits&quot;,
+  &quot;inStock&quot;: true
+}</div>
+                    
+                
+            </div>
+            <div class="response-section">
+                <div class="section-title">Response</div>
+                
+                    <p><strong>Status:</strong> 201 - Created</p>
+                    <p><strong>Content Type:</strong> application/json; charset=utf-8</p>
+                    
+                    
+                        <p><strong>Body:</strong></p>
+                        <div class="code-block">{
+  &quot;name&quot;: &quot;Discounted Mangoes&quot;,
+  &quot;price&quot;: 5.99,
+  &quot;discount&quot;: 12.5,
+  &quot;description&quot;: &quot;Sweet tropical mangoes, now at a discount.&quot;,
+  &quot;image&quot;: &quot;https://images.unsplash.com/photo-1553279768-865429fa0078?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+  &quot;dataAiHint&quot;: &quot;mango fruit&quot;,
+  &quot;category&quot;: &quot;fruits&quot;,
+  &quot;inStock&quot;: true,
+  &quot;id&quot;: &quot;1774336312362&quot;,
+  &quot;createdAt&quot;: &quot;2026-03-24T07:11:52.362Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-03-24T07:11:52.362Z&quot;
+}</div>
+                    
+                
+            </div>
+        </div>
+        
+                
+        <div class="validation-results validation-passed">
+            <h4>Validation Results</h4>
+            
+            <!-- Status Code Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Status Code:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">201</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">201</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Content Type Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Content Type:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">application/json</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">application/json; charset=utf-8</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Body Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Body Validation:</strong> ✓ Passed</p>
+                <p><strong>Reason:</strong> No body expectation set.</p>
+                
+                
+            </div>
+        </div>
+        
+                
+            </div>
+        </div>
+        
+        <div class="log-entry">
+            <div class="log-header">
+                <div class="log-title">
+                    <span class="arrow">▶</span>
+                    <span class="method method-put">PUT</span>
+                    <span>http://localhost:3001/api/products/6</span>
+                    <span class="status-code status-2xx">200 OK</span>
+                    <span class="validation-badge passed">
+                            ✓ Validation
+                        </span>
+                </div>
+                <div class="log-time">3/24/2026, 8:11:55 PM</div>
+            </div>
+            <div class="log-body">
+                
+        <div class="request-response-grid">
+            <div class="request-section">
+                <div class="section-title">Request</div>
+                
+                    <p><strong>Method:</strong> PUT</p>
+                    <p><strong>URL:</strong> http://localhost:3001/api/products/6</p>
+                    
+                        <p><strong>Headers:</strong></p>
+                        <div class="code-block">{
+  &quot;Content-Type&quot;: &quot;application/json&quot;
+}</div>
+                    
+                    
+                        <p><strong>Body:</strong></p>
+                        <div class="code-block">{
+  &quot;discount&quot;: 25.99
+}</div>
+                    
+                
+            </div>
+            <div class="response-section">
+                <div class="section-title">Response</div>
+                
+                    <p><strong>Status:</strong> 200 - OK</p>
+                    <p><strong>Content Type:</strong> application/json; charset=utf-8</p>
+                    
+                    
+                        <p><strong>Body:</strong></p>
+                        <div class="code-block">{
+  &quot;id&quot;: &quot;6&quot;,
+  &quot;name&quot;: &quot;Chicken Breast&quot;,
+  &quot;price&quot;: 9.99,
+  &quot;discount&quot;: 25.99,
+  &quot;description&quot;: &quot;Boneless, skinless chicken breast, lean and versatile.&quot;,
+  &quot;image&quot;: &quot;https://images.unsplash.com/photo-1633096013004-e2cb4023b560?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+  &quot;dataAiHint&quot;: &quot;chicken meat&quot;,
+  &quot;category&quot;: &quot;meat&quot;,
+  &quot;inStock&quot;: true,
+  &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-03-24T07:11:55.981Z&quot;
+}</div>
+                    
+                
+            </div>
+        </div>
+        
+                
+        <div class="validation-results validation-passed">
+            <h4>Validation Results</h4>
+            
+            <!-- Status Code Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Status Code:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">200</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">200</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Content Type Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Content Type:</strong> ✓ Passed</p>
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">application/json</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">application/json; charset=utf-8</div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <!-- Body Validation -->
+            <div style="margin-bottom: 15px;">
+                <p><strong>Body Validation:</strong> ✓ Passed</p>
+                <p><strong>Reason:</strong> Partial/exact body match succeeded.</p>
+                
+                
+                    <div class="validation-comparison">
+                        <div class="expected-section">
+                            <div class="comparison-title">Expected:</div>
+                            <div class="comparison-value">{
+  &quot;discount&quot;: 25.99
+}</div>
+                        </div>
+                        <div class="actual-section">
+                            <div class="comparison-title">Actual:</div>
+                            <div class="comparison-value">{
+  &quot;id&quot;: &quot;6&quot;,
+  &quot;name&quot;: &quot;Chicken Breast&quot;,
+  &quot;price&quot;: 9.99,
+  &quot;discount&quot;: 25.99,
+  &quot;description&quot;: &quot;Boneless, skinless chicken breast, lean and versatile.&quot;,
+  &quot;image&quot;: &quot;https://images.unsplash.com/photo-1633096013004-e2cb4023b560?w=600&amp;h=400&amp;fit=crop&amp;auto=format&quot;,
+  &quot;dataAiHint&quot;: &quot;chicken meat&quot;,
+  &quot;category&quot;: &quot;meat&quot;,
+  &quot;inStock&quot;: true,
+  &quot;createdAt&quot;: &quot;2026-03-24T07:10:25.428Z&quot;,
+  &quot;updatedAt&quot;: &quot;2026-03-24T07:11:55.981Z&quot;
+}</div>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+        
+                
+            </div>
+        </div>
+        
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Report generated at 3/24/2026, 8:12:24 PM</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle log entry expansion
+            const logHeaders = document.querySelectorAll('.log-header');
+            logHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const logBody = this.nextElementSibling;
+                    logBody.classList.toggle('expanded');
+                    
+                    const arrow = this.querySelector('.arrow');
+                    if (arrow) {
+                        arrow.textContent = logBody.classList.contains('expanded') ? '▼' : '▶';
+                    }
+                });
+            });
+
+            // Pretty print JSON in code blocks
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                try {
+                    const content = block.textContent;
+                    const parsed = JSON.parse(content);
+                    block.textContent = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    // Not JSON, leave as is
+                }
+            });
+        });
+        </script>
+</body>
+</html>

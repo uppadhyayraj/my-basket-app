@@ -22,6 +22,7 @@ const PaginationSchema = z.object({
 const CreateProductSchema = z.object({
   name: z.string().min(1),
   price: z.number().positive(),
+  discount: z.number().min(0).max(100).multipleOf(0.01).optional(),
   description: z.string().min(1),
   image: z.string().url(),
   dataAiHint: z.string().min(1),
