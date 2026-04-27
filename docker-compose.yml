@@ -98,7 +98,8 @@ services:
       - "9002:9002"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - API_GATEWAY_URL=http://api-gateway:3000
+      - NEXT_PUBLIC_API_URL=
     depends_on:
       - api-gateway
     networks:

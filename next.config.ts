@@ -1,8 +1,16 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   output: 'standalone',
+  async rewrites() {
+    const apiGatewayUrl = process.env.API_GATEWAY_URL || 'http://localhost:3000';
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${apiGatewayUrl}/api/:path*`,
+      },
+    ];
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
