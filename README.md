@@ -88,6 +88,8 @@ npm run microservices:install
 
 ### 2. Start microservices
 ```bash
+openssl rand -hex 32  # Generate a secure JWT secret and set it in .env files
+export JWT_SECRET=your_generated_secret
 npm run microservices:start
 ```
 
