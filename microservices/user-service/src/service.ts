@@ -13,7 +13,8 @@ import {
   AuthResponse,
 } from './types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mybasket-secret-key-change-in-production';
+if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET environment variable is required');
+const JWT_SECRET: string = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
 const SALT_ROUNDS = 10;
 
@@ -151,7 +152,7 @@ export class UserService {
 
   static verifyToken(token: string): { userId: string; username: string } | null {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as {
+      const decoded = jwt.verify(token, JWT_SECRET) as unknown as {
         userId: string;
         username: string;
       };

@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mybasket-secret-key-change-in-production';
+if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET environment variable is required');
+const JWT_SECRET: string = process.env.JWT_SECRET;
 
 // Paths that do NOT require authentication
 const PUBLIC_PATHS = [
@@ -33,7 +34,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; username: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as unknown as { userId: string; username: string };
     // Inject user info into headers for downstream services
     req.headers['x-user-id'] = decoded.userId;
     req.headers['x-username'] = decoded.username;
